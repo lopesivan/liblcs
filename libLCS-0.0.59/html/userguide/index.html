@@ -1,0 +1,218 @@
+<html lang="en">
+<head>
+<title>libLCS Userguide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="libLCS Userguide">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="#Top">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+
+
+<!-- Output the table of contents at the beginning. -->
+   <div class="contents">
+<h2>Table of Contents</h2>
+<ul>
+<li><a name="toc_Top" href="index.html#Top">Front Matter</a>
+<ul>
+<li><a href="index.html#Top">What is libLCS?</a>
+<li><a href="index.html#Top">About this userguide</a>
+<ul>
+<li><a href="index.html#Top">Disclaimer</a>
+</li></ul>
+<li><a href="index.html#Top">How to Read this Userguide</a>
+<li><a href="index.html#Top">Credits</a>
+</li></ul>
+<li><a name="toc_Copying-This-Userguide" href="Copying-This-Userguide.html#Copying-This-Userguide">1 Copying This Userguide</a>
+<ul>
+<li><a href="Copying-This-Userguide.html#Copying-This-Userguide">1.1 GNU Free Documentation License</a>
+</li></ul>
+<li><a name="toc_Preliminaries" href="Preliminaries.html#Preliminaries">2 Preliminaries</a>
+<ul>
+<li><a href="Why-a-C_002b_002b-library-for-logic-circuit-simulation.html#Why-a-C_002b_002b-library-for-logic-circuit-simulation">2.1 Why a C++ library for logic circuit simulation</a>
+<li><a href="Licence.html#Licence">2.2 Licence and terms for use of libLCS</a>
+<li><a href="Downloading-libLCS.html#Downloading-libLCS">2.3 Downloading libLCS</a>
+<li><a href="Installing-libLCS.html#Installing-libLCS">2.4 Installing libLCS</a>
+<ul>
+<li><a href="Installing-libLCS.html#Installing-libLCS">2.4.1 Building libLCS</a>
+<li><a href="Installing-libLCS.html#Installing-libLCS">2.4.2 Installing libLCS</a>
+</li></ul>
+</li></ul>
+<li><a name="toc_Introduction-to-libLCS" href="Introduction-to-libLCS.html#Introduction-to-libLCS">3 Introduction to libLCS</a>
+<ul>
+<li><a href="Basics.html#Basics">3.1 Basics</a>
+<ul>
+<li><a href="Basics.html#Basics">3.1.1 The <code>lcs/lcs.h</code> file and the namespace <code>lcs</code></a>
+<li><a href="Basics.html#Basics">3.1.2 Logic States</a>
+<li><a href="Basics.html#Basics">3.1.3 Modules and Busses</a>
+<li><a href="Basics.html#Basics">3.1.4 Compiling libLCS applications</a>
+</li></ul>
+<li><a href="A-Simple-Example.html#A-Simple-Example">3.2 A Simple Example</a>
+<ul>
+<li><a href="A-Simple-Example.html#A-Simple-Example">3.2.1 XOR gate using off-the-shelf AND, OR and NOT gates</a>
+<ul>
+<li><a href="A-Simple-Example.html#A-Simple-Example">3.2.1.1 Circuit description</a>
+<li><a href="A-Simple-Example.html#A-Simple-Example">3.2.1.2 The class <code>Tester</code></a>
+<li><a href="A-Simple-Example.html#A-Simple-Example">3.2.1.3 The class <code>ChangeMonitor</code> and exporting value changes to a VCD file</a>
+<li><a href="A-Simple-Example.html#A-Simple-Example">3.2.1.4 The simulation</a>
+<li><a href="A-Simple-Example.html#A-Simple-Example">3.2.1.5 The VCD file</a>
+</li></ul>
+</li></ul>
+<li><a href="Logic-Gates.html#Logic-Gates">3.3 Logic Gates</a>
+<ul>
+<li><a href="Logic-Gates.html#Logic-Gates">3.3.1 The logic gate class templates</a>
+<li><a href="Logic-Gates.html#Logic-Gates">3.3.2 The logic gate constructors</a>
+<li><a href="Logic-Gates.html#Logic-Gates">3.3.3 Logic gate header files</a>
+</li></ul>
+<li><a href="System-Time-and-Sequential-Circuit-Elements.html#System-Time-and-Sequential-Circuit-Elements">3.4 System Time and Sequential Circuit Elements</a>
+<ul>
+<li><a href="System-Time-and-Sequential-Circuit-Elements.html#System-Time-and-Sequential-Circuit-Elements">3.4.1 System Time</a>
+<li><a href="System-Time-and-Sequential-Circuit-Elements.html#System-Time-and-Sequential-Circuit-Elements">3.4.2 The class <code>Clock</code></a>
+<li><a href="System-Time-and-Sequential-Circuit-Elements.html#System-Time-and-Sequential-Circuit-Elements">3.4.3 Flipflops</a>
+<ul>
+<li><a href="System-Time-and-Sequential-Circuit-Elements.html#System-Time-and-Sequential-Circuit-Elements">3.4.3.1 Flipflop header files</a>
+</li></ul>
+<li><a href="System-Time-and-Sequential-Circuit-Elements.html#System-Time-and-Sequential-Circuit-Elements">3.4.4 An Example</a>
+<li><a href="System-Time-and-Sequential-Circuit-Elements.html#System-Time-and-Sequential-Circuit-Elements">3.4.5 The class <code>FrequencyDivider</code></a>
+</li></ul>
+<li><a href="Utility-Modules.html#Utility-Modules">3.5 Utility Modules</a>
+<ul>
+<li><a href="Utility-Modules.html#Utility-Modules">3.5.1 Buffer</a>
+<li><a href="Utility-Modules.html#Utility-Modules">3.5.2 FanOut</a>
+<li><a href="Utility-Modules.html#Utility-Modules">3.5.3 Register</a>
+<li><a href="Utility-Modules.html#Utility-Modules">3.5.4 Counter</a>
+<li><a href="Utility-Modules.html#Utility-Modules">3.5.5 Shift Register</a>
+</li></ul>
+</li></ul>
+<li><a name="toc_Modules" href="Modules.html#Modules">4 Modules</a>
+<ul>
+<li><a href="Example-Module-1.html#Example-Module-1">4.1 Example Module 1</a>
+<ul>
+<li><a href="Example-Module-1.html#Example-Module-1">4.1.1 The logic equations for a 1-bit full adder</a>
+<li><a href="Example-Module-1.html#Example-Module-1">4.1.2 The module class definition</a>
+<li><a href="Example-Module-1.html#Example-Module-1">4.1.3 Implementation of the module class</a>
+<li><a href="Example-Module-1.html#Example-Module-1">4.1.4 2-bit Full Adder</a>
+</li></ul>
+<li><a href="Example-Module-2.html#Example-Module-2">4.2 Example Module 2</a>
+<ul>
+<li><a href="Example-Module-2.html#Example-Module-2">4.2.1 Line Events</a>
+<li><a href="Example-Module-2.html#Example-Module-2">4.2.2 Busses</a>
+<ul>
+<li><a href="Example-Module-2.html#Example-Module-2">4.2.2.1 Header files of the bus classes</a>
+<li><a href="Example-Module-2.html#Example-Module-2">4.2.2.2 Inheritance heirarchy of the bus classes</a>
+</li></ul>
+<li><a href="Example-Module-2.html#Example-Module-2">4.2.3 The 1-bit fulladder</a>
+<ul>
+<li><a href="Example-Module-2.html#Example-Module-2">4.2.3.1 Constructor</a>
+<li><a href="Example-Module-2.html#Example-Module-2">4.2.3.2 Event action function</a>
+<li><a href="Example-Module-2.html#Example-Module-2">4.2.3.3 Destructor</a>
+<li><a href="Example-Module-2.html#Example-Module-2">4.2.3.4 The complete example</a>
+</li></ul>
+</li></ul>
+<li><a href="Example-Module-3.html#Example-Module-3">4.3 Example Module 3</a>
+<ul>
+<li><a href="Example-Module-3.html#Example-Module-3">4.3.1 The <code>InOutBus</code></a>
+<li><a href="Example-Module-3.html#Example-Module-3">4.3.2 The 2-bit full adder implementation</a>
+<li><a href="Example-Module-3.html#Example-Module-3">4.3.3 Test Program</a>
+</li></ul>
+</li></ul>
+<li><a name="toc_Continuous-Assignments" href="Continuous-Assignments.html#Continuous-Assignments">5 Conitnuous Assignments</a>
+<ul>
+<li><a href="Continuous-Assignments.html#Continuous-Assignments">5.1 Data Flow Modelling</a>
+<li><a href="Continuous-Assignments.html#Continuous-Assignments">5.2 Data Flow Modelling Using Continuous Assignments</a>
+<li><a href="Continuous-Assignments.html#Continuous-Assignments">5.3 Continuous Assignments in libLCS</a>
+<li><a href="Continuous-Assignments.html#Continuous-Assignments">5.4 Example</a>
+</li></ul>
+</li></ul>
+</div>
+
+
+
+
+<div class="node">
+<p>
+<a name="Top"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Copying-This-Userguide.html#Copying-This-Userguide">Copying This Userguide</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="../index.html#dir">(dir)</a>
+<hr>
+</div>
+
+<h2 class="unnumbered">Front Matter</h2>
+
+<p>
+
+<h3 class="section">What is libLCS?</h3>
+
+<p>
+libLCS is a <b>lib</b>rary for <b>L</b>ogic <b>C</b>ircuit <b>S</b>imulation developed in 100% C++. One can use this 
+library for design and testing of digital circuit systems. For more information, either continue reading 
+this userguide further, or visit the libLCS website at 
+<a href="http://liblcs.sourceforge.net">http://liblcs.sourceforge.net</a>.
+
+<h3 class="section">About this userguide</h3>
+
+<p>
+This userguide serves as a tutorial introduction and a reference guide to libLCS. New users of libLCS can use 
+it to get started with libLCS. Advanced users of libLCS can use it as a quick reference for the various features 
+of libLCS. However, the development of this userguide is an ongoing process. Hence, kindly bear bear with the 
+incompleteness in few parts, if any. If you find any mistake/error, kindly inform the author by email at 
+sivachandra[AT]gmail[DOT]com. 
+
+
+<h4 class="subsection">Disclaimer</h4>
+
+<p>
+This userguide has been prepared with utmost care in the hope that users of libLCS can use this as a tutorial 
+and as a reference guide. However, the author does not guarantee it to be suitable for any particular purpose 
+and is not responsible for any unlikely loss or injury it may cause to the reader.
+
+
+<h3 class="section">How to Read this Userguide</h3>
+
+<p>
+If you are a new user of libLCS, inorder to understand the basics right, you should read the chapters 
+<a href="Preliminaries.html#Preliminaries">Preliminaries</a> and <a href="Introduction-to-libLCS.html#Introduction-to-libLCS">Introduction to libLCS</a> in the sequence they have been presented in this userguide. 
+If you have been using libLCS for some time and would like to refer to the usage of a particular feature, then first
+locate a chapter/section/subsection title in the table of contents pertaining to that feature. The corresponding 
+chapter/section/subsection will explain the purpose and usage of that feature.
+
+
+<h3 class="section">Credits</h3>
+
+<p>
+This userguide was prepared using the GNU Texinfo software.
+
+
+<hr>
+<h2>Quick Links</h2>
+Below is a master menu of all the major nodes in this user guide.
+
+
+<p>
+<ul class="menu">
+<li><a accesskey="1" href="Copying-This-Userguide.html#Copying-This-Userguide">Copying This Userguide</a>:  Terms and conditions for copying this userguide.
+<li><a accesskey="2" href="Preliminaries.html#Preliminaries">Preliminaries</a>:  Preliminary information about libLCS.
+<li><a accesskey="3" href="Introduction-to-libLCS.html#Introduction-to-libLCS">Introduction to libLCS</a>:  A chapter introducing the basics of libLCS.
+<li><a accesskey="4" href="Modules.html#Modules">Modules</a>:  A chapter explaining the fundamentals of user defined modules.
+<li><a accesskey="5" href="Continuous-Assignments.html#Continuous-Assignments">Continuous Assignments</a>:  A chapter introducing the usage of continuous assignments in libLCS.
+
+</ul>
+
+
+   <p>
+
+   </body></html>
+

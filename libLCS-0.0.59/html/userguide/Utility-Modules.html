@@ -1,0 +1,286 @@
+<html lang="en">
+<head>
+<title>Utility Modules - libLCS Userguide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="libLCS Userguide">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Introduction-to-libLCS.html#Introduction-to-libLCS" title="Introduction to libLCS">
+<link rel="prev" href="System-Time-and-Sequential-Circuit-Elements.html#System-Time-and-Sequential-Circuit-Elements" title="System Time and Sequential Circuit Elements">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
+Copyright (C) 2006, 2007 Siva Chandra.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Utility-Modules"></a>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="System-Time-and-Sequential-Circuit-Elements.html#System-Time-and-Sequential-Circuit-Elements">System Time and Sequential Circuit Elements</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Introduction-to-libLCS.html#Introduction-to-libLCS">Introduction to libLCS</a>
+<hr>
+</div>
+
+<h3 class="section">3.5 Utility Modules</h3>
+
+<p>
+libLCS provides few off-the-shelf utility modules which a user can use in his/her simulations. Each of these modules is 
+described in detail in this section.
+
+
+<h4 class="subsection">3.5.1 Buffer</h4>
+
+<p>
+The <code>Buffer</code> template class can be used as a delay buffer for any bus. This class requires two template parameters.
+The first parameter indicates the number of lines in the bus for which it acts as a buffer, and the second parameter 
+indicates the delay. The declaration of the <code>Buffer</code> class is as follows:
+
+<pre class="example">     template &lt;unsigned int lines, unsigned int delay = 0&gt;
+     class Buffer;
+</pre>
+   <p>
+The <code>Buffer</code> class is defined in the header file <code>lcs/buffer.h</code>. Note that the above declaration indicates a 
+default value of 0 for the delay of the buffer module. A small example illustrating its usage is as below. The buffer 
+class constructor requires the output bus as the first argument, and the input bus as the second argument.
+
+<pre class="example"><pre class="verbatim">     
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     using namespace std;
+     
+     int main(void)
+     {
+         Bus&lt;5> output, input;
+     
+         // Declaring a 5 input buffer with a delay of
+         // 5 system time units.
+         Buffer&lt;5, 5> buffer(output, input);
+     
+         ChangeMonitor&lt;5> cm(input, "input", DUMP_ON);
+         ChangeMonitor&lt;5> cb(output, "output", DUMP_ON);
+     
+         Tester&lt;5> tester(input);
+     
+         Simulation::setStopTime(5000);
+         Simulation::start();
+     
+         return 0;
+     }
+</pre>
+</pre>
+   <p>
+
+<h4 class="subsection">3.5.2 FanOut</h4>
+
+<p>
+The <code>FanOut</code> template class (which requires two template parameters) encapsulates a module which takes a single 
+input and generates a user specified number of copies of the input as output. The desired number of outputs should be 
+specified as the first template parameter. The second template parameter specifies the input to output propogation 
+delay. The declaration of the <code>FanOut</code> class is as follows:
+
+<pre class="example">     template &lt;unsigned int n = 1, unsigned int delay = 0&gt;
+     class FanOut;
+</pre>
+   <p>
+The <code>FanOut</code> class is defined in the header file <code>lcs/fanout.h</code>. Note that the above declaration indicates a 
+default value of 1 output line, and a default value of 0 propogation delay of the fanout module. A small example 
+illustrating its usage is as below. The <code>FanOut</code> class constructor requires the output bus as the first argument, 
+and the single-line input bus as the second argument.
+
+<pre class="example"><pre class="verbatim">     
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     using namespace std;
+     
+     int main(void)
+     {
+         Bus&lt;5> output;
+         Clock clk = Clock::getClock();
+         
+         // Initialising a FanOut object which takes the 
+         // system clock as input and generates 5 copies 
+         // of it. Also, the time delay between the new 
+         // copies and the input clock pulse is specified 
+         // through the second template parameter as 5 
+         // system time units.
+         FanOut&lt;5, 5> fanout(output, clk); 
+     
+         ChangeMonitor&lt;1> cm(clk, "clk", DUMP_ON);
+         ChangeMonitor&lt;5> cb(output, "output", DUMP_ON);
+     
+         Simulation::setStopTime(5000);
+         Simulation::start();
+     
+         return 0;
+     }
+</pre>
+</pre>
+   <p>
+
+<h4 class="subsection">3.5.3 Register</h4>
+
+<p>
+libLCS provides a module class, a template class named <code>Register</code>, which encapsulates a hardware register. 
+The register module reuires one input data bus, one clock signal input, and one output data bus. The input bus 
+and the output bus should have the same width. This width is also equal to the width of the register. The input 
+data bus line states are tranferred to the output data bus lines at the occurance of a pulse edge on the clock 
+signal input.
+   <pre class="sp">
+
+</pre>
+The <code>Register</code> class is defined in the header file <code>register.h</code>. The class declaration is as follows:
+
+<pre class="example">     template&lt;unsigned int bits = 1, PulseEdge edgeType = POS_EDGE, unsigned int delay = 0&gt;
+     class Register; // Derived publicly from the class Module.
+</pre>
+   <p>
+The third template parameter <code>delay</code> indicates the input to output propogation delay of the register module 
+in system time units. Below is a simple example, which uses feedback around a (2-bit register + two NOT gates) 
+system, to illustrate the usage of the module class <code>Register</code>.
+
+<pre class="example"><pre class="verbatim">     
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     
+     int main(void)
+     {
+         Bus&lt;2> in(3), out(0);
+     
+         Clock clk = Clock::getClock();
+     
+         // Initialising a 2-bit register which 
+         // which responds to positive edges on
+         // its clock input. The input to output
+         // propogation delay of the register is 
+         // 0 time units.
+         Register&lt;2, POS_EDGE, 0> reg(out, in, clk);
+     
+         Not&lt;> n1(in[0], out[0]);
+         Not&lt;> n2(in[1], out[1]);
+     
+         ChangeMonitor&lt;2> cmop(out, "Output");
+     
+         Simulation::setStopTime(2000);
+         Simulation::start();
+     
+         return 0;
+     }
+</pre>
+</pre>
+   <p>
+It is upto to the reader to compile and run to verify the result of the above simulation. 
+   <pre class="sp">
+
+</pre>
+The <code>Register</code> class has an overloaded <code>operator[]</code> as its member which enables reading (but not writing) 
+of the register bits by indexing suitably.
+
+
+<h4 class="subsection">3.5.4 Counter</h4>
+
+<p>
+A template module class <code>Counter</code> is among the off-the-shelf utilities classes provided by libLCS. The 
+template parameters specify the bit-width of the counter and the triggering event which leads to an increment in
+the count value of the counter. The class <code>Counter</code> is defined in the header file <code>counter.h</code>. The 
+class declaration is as follows.
+
+<pre class="example">     template&lt;unsigned int bits, LineEvent event = LINE_POS_EDGE&gt;
+     class Counter; // Derived publicly from the class Module
+</pre>
+   <p>
+The following example illustrates the  usage of the class <code>Counter</code>. It is upto to the user to compile and run 
+to verify the result of the simulation.
+
+<pre class="example"><pre class="verbatim">     
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     
+     int main(void)
+     {
+         Bus&lt;4> out;
+         Clock clk = Clock::getClock();
+     
+         // Initialising a 4-bit counter which 
+         // increments the count at the occurance
+         // of a  positive edge on its clock input.
+         Counter&lt;4, LINE_POS_EDGE> cnt(out, clk);
+     
+         ChangeMonitor&lt;4> cmop(out, "Count");
+     
+         Simulation::setStopTime(4000);
+         Simulation::start();
+     
+         return 0;
+     }
+</pre>
+</pre>
+   <p>
+
+<h4 class="subsection">3.5.5 Shift Register</h4>
+
+<p>
+There exists an off-the-shelf template module class which encapsulates a shift register. It is defined in the header 
+file <code>lcs/shiftreg.h</code> and has the following class declaration.
+
+<pre class="example">     template &lt;unsigned int bits = 1, PulseEdge edgeType = POS_EDGE, Shift shift = LEFT_SHIFT, unsigned int delay = 0&gt;
+     class ShiftReg; // Derived publicly from the class Module.
+</pre>
+   <p>
+As can be seen from the above class declaration, the shift register class requires four template arguments: 1. Number 
+of bits in the register (that is, the register width), 2. The type of pulse edge on the clock input which triggers 
+the shift operation, 3. A parameter indicating the type of shift (left shift or right shift), 4. The propogation 
+delay. The following example illustrates the usage of the off-the-shelf shift register class.
+
+<pre class="example"><pre class="verbatim">     
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     
+     int main(void)
+     {
+         Bus&lt;4> out(0), count(0);
+         Clock clk = Clock::getClock();
+     
+         // We will make use of the second bit of the counter output 
+         // as the input to our shift register.
+         Counter&lt;4> counter(count, clk);
+     
+         // Initialising a shift register of width 4 bits which is triggered
+         // on occurance of a positive edge on its clock input, and shifts the 
+         // input right. The input to the shift register is the second bit of
+         // the counter module.
+         ShiftReg&lt;4, POS_EDGE, RIGHT_SHIFT> reg(out, count[1], clk);
+     
+         ChangeMonitor&lt;4> cmop(out, "Reg Value");
+     
+         Simulation::setStopTime(4000);
+         Simulation::start();
+     
+         return 0;
+     }
+     
+</pre>
+</pre>
+   <p>
+
+
+   <p>
+
+   </body></html>
+

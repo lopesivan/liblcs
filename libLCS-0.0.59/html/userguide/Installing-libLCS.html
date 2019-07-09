@@ -1,0 +1,100 @@
+<html lang="en">
+<head>
+<title>Installing libLCS - libLCS Userguide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="libLCS Userguide">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Preliminaries.html#Preliminaries" title="Preliminaries">
+<link rel="prev" href="Downloading-libLCS.html#Downloading-libLCS" title="Downloading libLCS">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
+Copyright (C) 2006, 2007 Siva Chandra.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Installing-libLCS"></a>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Downloading-libLCS.html#Downloading-libLCS">Downloading libLCS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Preliminaries.html#Preliminaries">Preliminaries</a>
+<hr>
+</div>
+
+<h3 class="section">2.4 Installing libLCS</h3>
+
+<p>
+This Section details instructions for building and installing the static library for libLCS. Currently, these 
+instructions are relevant for all Linuxes, Cygwin and MinGW/MSYS with GCC-3.4.2 or higher. However, it should be 
+possible to build the library on other platforms with appropriate modifications. If you are able to build the 
+library on platforms other than those mentioned above, you are are encouraged to submit the build instructions to 
+the libLCS project administrator (email to sivachandra[at]users[dot]sourceforge[dot]net). 
+
+
+<h4 class="subsection">2.4.1 Building libLCS</h4>
+
+<p>
+The first step is to download the zipped/tarred bundle of the latest libLCS release from the sourceforge.net 
+project page  
+<a href="http://www.sourceforge.net/projects/liblcs/">http://www.sourceforge.net/projects/liblcs/</a>.Next unzip/untar this file in a convenient directory. The contents of the zip/tar file are detailed in the 
+<a href="Downloading-libLCS.html#Downloading-libLCS">Downloading libLCS</a> section. For ease of illustration, let us assume that the downloaded file has a name 
+libLCS-a.b.x.zip. After unzipping/untarring, do the following.
+
+<pre class="example">     cd libLCS-a.b.x/
+     make all
+</pre>
+   <p>
+This will build the static library into the directory <code>libLCS-a.b.x/lib/</code>, and all the examples into the 
+directory <code>libLCS-a.b.x/bin/</code>. If you do not want to build the examples, then instead of the above command
+sequence, do the following.
+
+<pre class="example">     cd libLCS-a.b.x/ 
+     make lib
+</pre>
+   <p>
+If you would like to build the examples separately after building the static library, follow the above commands 
+by 
+
+<pre class="example">     make examples
+</pre>
+   <p>
+This will build all the examples into the directory <code>libLCS-a.b.x/bin/</code>. You can do a final and optional 
+<code>'make clean'</code> to clean up the object files, the built static library, and the built example binaries.
+
+
+<h4 class="subsection">2.4.2 Installing libLCS</h4>
+
+<p>
+There are no special steps required to install the static library of libLCS once it has been successfully built. 
+However, to begin using it in the easiest way, you will have to move the header files and the static library file 
+to the standard include and linker paths. Copy the directory <code>lcs</code> as it is to the standard compiler include path 
+(<code>lcs</code> is one of the directories packaged into the release zip/tar file for any particular libLCS release. See 
+the <a href="Downloading-libLCS.html#Downloading-libLCS">Downloading libLCS</a> section for more information.) On most Linux like platforms, the standard compiler include 
+path is <code>/usr/include/</code>. Similarly, copy the newly built static library file <code>lib/libLCS.a</code> to the standard 
+linker path. On most Linux like platforms, the standard linker path is <code>/usr/lib/</code>. All you will typically 
+need to do is to login as root and do the following in the unzipped/untarred <code>libLCS-a.b.x</code> directory.
+
+<pre class="example">     cp -r lcs $COMPILER_INCLUDE_PATH
+     cp lib/libLCS.a $LINKER_PATH
+</pre>
+   <p>
+In the above command sequence <code>$COMPILER_INCLUDE_PATH</code> is the standard compiler include path, and the 
+<code>$LINKER_PATH</code> is the standard linker path.
+
+
+   <p>
+
+   </body></html>
+

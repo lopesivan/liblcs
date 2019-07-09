@@ -1,0 +1,70 @@
+<html lang="en">
+<head>
+<title>Why a C++ library for logic circuit simulation - libLCS Userguide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="libLCS Userguide">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Preliminaries.html#Preliminaries" title="Preliminaries">
+<link rel="next" href="Licence.html#Licence" title="Licence">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
+Copyright (C) 2006, 2007 Siva Chandra.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Why-a-C++-library-for-logic-circuit-simulation"></a>
+<a name="Why-a-C_002b_002b-library-for-logic-circuit-simulation"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Licence.html#Licence">Licence</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Preliminaries.html#Preliminaries">Preliminaries</a>
+<hr>
+</div>
+
+<h3 class="section">2.1 Why a C++ library for logic circuit simulation</h3>
+
+<p>
+There are many HDLs (Hardware Description Languages) and HVLs (Hardware Verification Languages) currently in use. 
+Among the HDLs, Verilog is the most common language of choice. Among HVLs, the Open Vera language is fast becoming a 
+language of choice. SystemVerilog, a successor of Verilog, can be used as a HDL (Verilog is a subset of SystemVerilog) 
+as well as a HVL. Though these languanges are easy to use, they are all evolving to incorporate features which other 
+general purpose object-oriented languages like C++ already possess. Hence, it is natural to ask wether a language like 
+C++ can be used effectively as a HDL. The answer to this question is exactly what libLCS is trying to seek.
+   <pre class="sp">
+
+</pre>
+It is said that every library (in whatever base language it may have been developed in) introduces another 
+<em>sublanguage</em> (such a sublanguage is usually reffered to as an API) of its own. Hence, if a C++ library can be so 
+designed that the new sublanguage it introduces is as intuitive and as powerfull as a HDL, then the answer to the 
+question raised in the above paragraph is an emphatic "yes". libLCS is being designed and developed to verify if it 
+really is a "yes". The aim is to be as intuitive and powerfull as the Verilog HDL. 
+   <pre class="sp">
+
+</pre>
+(A C++ API called SystemC, standardised by the IEEE, can already be used for hardware simulation and verification. 
+However, this API is not very intiutive for hardware description.)
+   <pre class="sp">
+
+</pre>
+Another natural question which one can ask is, "Why only C++? Why not Java?" It is simply because of the operator 
+overloading feature of C++ makes it more flexible, and hence more likely to aid in desiging an intiutive 
+sublanguage/API for hardware description. 
+
+<!-- ##################      Section      ##################### -->
+
+
+   </body></html>
+

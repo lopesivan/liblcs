@@ -1,0 +1,325 @@
+<html lang="en">
+<head>
+<title>System Time and Sequential Circuit Elements - libLCS Userguide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="libLCS Userguide">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Introduction-to-libLCS.html#Introduction-to-libLCS" title="Introduction to libLCS">
+<link rel="prev" href="Logic-Gates.html#Logic-Gates" title="Logic Gates">
+<link rel="next" href="Utility-Modules.html#Utility-Modules" title="Utility Modules">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
+Copyright (C) 2006, 2007 Siva Chandra.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="System-Time-and-Sequential-Circuit-Elements"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Utility-Modules.html#Utility-Modules">Utility Modules</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Logic-Gates.html#Logic-Gates">Logic Gates</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Introduction-to-libLCS.html#Introduction-to-libLCS">Introduction to libLCS</a>
+<hr>
+</div>
+
+<h3 class="section">3.4 System Time and Sequential Circuit Elements</h3>
+
+<p>
+In this section, we will present the concept of <em>system time</em>, the class <code>Clock</code>, the off-the-shelf 
+flipflop modules, and the module <code>FrequencyDivider</code>.
+
+
+<h4 class="subsection">3.4.1 System Time</h4>
+
+<p>
+The libLCS simulation system has a system timer. This timer is turned on automatically whenever a libLCS simulation is 
+started. The timer starts ticking up from time zero until the stop-time. As presented in the section <a href="A-Simple-Example.html#A-Simple-Example">A Simple Example</a>,
+a libLCS simulation starts with a call to the static member function <code>Simulation::start()</code>. A simulation lasts for 
+the duration for which the system timer was set to run for. The stop time has to be set by a call to the static 
+member function <code>Simulation::setStopTime(unsigned int)</code>. 
+
+
+<h4 class="subsection">3.4.2 The class <code>Clock</code></h4>
+
+<p>
+Apart from a system timer, the libLCS simulation system also has a clock provided through the singleton class 
+<code>Clock</code>. It is defined in the header file <code>lcs/clock.h</code>. It is essestially a pulse generator with equal high 
+and low periods. It should be obtained through the static function <code>Clock::getClock()</code>. By default, the pulse width 
+is set to 100 system time units (equivalent to a time period of 200 system time units). It can be set to a value of one's 
+choice by using the static member function <code>Clock::setPulseWidth(unsigned int)</code>. A detailed example, which illustrates 
+the use of a clock, is presented in a later subsection below. 
+
+
+<h4 class="subsection">3.4.3 Flipflops</h4>
+
+<p>
+There exist of-the-shelf modules for D and JK flipflops in libLCS. They are provided as template classes requiring two 
+template parameters. The first template parameter determines if the flipflop is positive edge triggered or negetive 
+edge triggered. The second template parameter determines the input to output propogation delay of the flipflop. The 
+following are the template class declarations for the flipflop modules. 
+
+     <ol type=1 start=1>
+
+<li>The D-flipflop template class declaration:
+     <pre class="example">          template&lt;PulseEdge type = POS_EDGE, unsigned int delay = 0&gt;
+          class DFlipFlop;
+     </pre>
+     <p>
+<li>The JK-flipflop template class declaration:
+     <pre class="example">          template&lt;PulseEdge type = POS_EDGE, unsigned int delay = 0&gt;
+          class JKFlipFlop;
+     </pre>
+     <p>
+        </ol>
+
+The trigger type of the flipflops is specified by an enumerated data type <code>PulseEdge</code>. The first template parameter 
+in the above class declarations is of this type. It takes a default value of <code>POS_EDGE</code> which specifies a positive
+edge triggered flipflop. The other value it can take is <code>NEG_EDGE</code> which indicates a negetive edge triggered 
+flipflop.
+
+
+<h5 class="subsubsection">3.4.3.1 Flipflop header files</h5>
+
+<p>
+The following is the list of all flipflop modules and the corresponding header files in which the flipflop module classes 
+are defined.
+
+     <ol type=1 start=1>
+
+<li>D-flipflop
+     <pre class="example">          lcs/dflipflop.h
+     </pre>
+     <p>
+<li>JK-flipflop
+     <pre class="example">          lcs/jkflipflop.h
+     </pre>
+     <p>
+        </ol>
+
+
+<h4 class="subsection">3.4.4 An Example</h4>
+
+<p>
+In this subsection, we will present an example which illustrates the use of the system timer, the system clock and 
+the D-flipflop modules. The aim of the example is to construct and simulate a 4-bit counter using D-flipflops. The 
+circuit diagram is as below. The bit sequence D3D2D1D0 in that order is the output of our counter circuit.
+
+<blockquote>
+<div align="center"><img src="four_bit_counter.jpg" alt="four_bit_counter.jpg"></div>
+   </blockquote>
+   
+The following is the full listing of the program which constructs and simulates the circuit shown in the above figure.
+There exists a general rule with all flipflop module class constructors. The outputs of the modules will be the passed 
+as arguments to the constructors before the inputs are passed as arguments. In case of D-flipflops, the first argument 
+to the flipflop constructor is the Q output. The next arguments are the D input, clock input, and the active-high reset 
+input in that order. (In case of a JK-flipflop, the order of arguments to the constructor is as follows: the Q output, 
+J input, K input, clock input, the active-high reset input. All arguments are single-line bus objects.)
+
+<pre class="example"><pre class="verbatim">     
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     using namespace std;
+     
+     int main(void)
+     {
+         // Declare single line busses for each node in the
+         // circuit. The flipflop output nodes have been set
+         // to zero to start with. The busses are initialised
+         // with the default template parameter of 1. The reset
+         // line to be used for all the flipflops has been set 
+         // to 0.
+         Bus&lt;> q0(0), q1(0), q2(0), q3(0), d0, d1, d2, d3, rst(0);
+     
+         // Initialise a clock object.
+         Clock clk = Clock::getClock();
+     
+         // Initialise the NOT gates in the circuit. The NOT
+         // gates are initialised with the default template
+         // parameter corresponding to a propogation delay of
+         // zero.
+         Not&lt;> n1(d0, q0), n2(d1, q1), n3(d2, q2), n4(d3, q3);
+     
+         // Initialise the 4 positive edge-triggered flipflops
+         // using the default template parameters.
+         DFlipFlop&lt;> ff1(q0, d0, clk, rst), ff2(q1, d1, q0, rst), 
+                     ff3(q2, d2, q1, rst), ff4(q3, d3, q2, rst);
+     
+         // Initialise a ChangeMonitor object to monitor
+         // the output bit sequence of our counter circuit.
+         ChangeMonitor&lt;4> count((d0,d1,d2,d3), string("Count"), DUMP_ON);
+     
+         Simulation::setStopTime(4000); // Set the stop time.
+         Simulation::start(); // Start the simulation.
+     
+         return 0;
+     }
+</pre>
+</pre>
+   <p>
+When the above program is compiled and executed, the following output is obtained on the standard output.
+
+<pre class="verbatim">
+At time: 0,     Count: 1111
+At time: 100,   Count: 0000
+At time: 300,   Count: 0001
+At time: 500,   Count: 0010
+At time: 700,   Count: 0011
+At time: 900,   Count: 0100
+At time: 1100,  Count: 0101
+At time: 1300,  Count: 0110
+At time: 1500,  Count: 0111
+At time: 1700,  Count: 1000
+At time: 1900,  Count: 1001
+At time: 2100,  Count: 1010
+At time: 2300,  Count: 1011
+At time: 2500,  Count: 1100
+At time: 2700,  Count: 1101
+At time: 2900,  Count: 1110
+At time: 3100,  Count: 1111
+At time: 3300,  Count: 0000
+At time: 3500,  Count: 0001
+At time: 3700,  Count: 0010
+At time: 3900,  Count: 0011
+
+</pre>
+
+Since the <code>ChangeMonitor</code> object for the output has been initialed with <code>DUMP_ON</code>, a VCD file for the 
+simulation is generated. The following is the screenshot of the GTKWave plot of the generated VCD file.
+
+<blockquote>
+<div align="center"><img src="4_bit_counter_using_dff.jpg" alt="4_bit_counter_using_dff.jpg"></div>
+   </blockquote>
+   
+
+<h4 class="subsection">3.4.5 The class <code>FrequencyDivider</code></h4>
+
+<p>
+libLCS provides a module which divides the frequency of the input signal by a specified factor. This module, defined in 
+the file <code>lcs/freqdiv.h</code>, is provided as a template class with the following declaration. 
+
+<pre class="example">     template&lt;unsigned int factor, unsigned int delay = 0&gt;
+     class FrequencyDivider;
+</pre>
+   <p>
+The first template parameter <code>factor</code> specifies the factor by which the input frequency is divided. The second 
+template parameter <code>delay</code>, which takes a default value of 0, specifies the input to output propogation delay. The 
+example below illustrates the usage of a frequency divider module. It uses the system clock as an input to the frequency 
+divider which divides the clock frequency by 7. A zero delay module is used.
+
+<pre class="example"><pre class="verbatim">     
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     using namespace std;
+     
+     int main(void)
+     {
+         Bus&lt;1> b;
+         Clock clk = Clock::getClock();
+     
+         // A frequency divider, which divides 
+         // the input clock frequecy by 7 and has
+         // a zero propogation delay, is declared.
+         // The first argument to the constructor 
+         // is the output of the frequency divider, 
+         // and the second argument is the input.
+         // In this case, we are using the system 
+         // clock as the input.
+         FrequencyDivider&lt;7> fd(b, clk);
+     
+         ChangeMonitor&lt;1> cm(clk, "clk");
+         ChangeMonitor&lt;1> cb(b, "b");
+     
+         Simulation::setStopTime(5000);
+         Simulation::start();
+     
+         return 0;
+     }
+</pre>
+</pre>
+   <p>
+When the above program is compiled and executed, the following output is obtained.
+
+<pre class="verbatim">
+
+At time: 0,	b: 0
+At time: 100,	clk: 1
+At time: 100,	b: 1
+At time: 200,	clk: 0
+At time: 300,	clk: 1
+At time: 400,	clk: 0
+At time: 500,	clk: 1
+At time: 600,	clk: 0
+At time: 700,	clk: 1
+At time: 800,	clk: 0
+At time: 800,	b: 0
+At time: 900,	clk: 1
+At time: 1000,	clk: 0
+At time: 1100,	clk: 1
+At time: 1200,	clk: 0
+At time: 1300,	clk: 1
+At time: 1400,	clk: 0
+At time: 1500,	clk: 1
+At time: 1500,	b: 1
+At time: 1600,	clk: 0
+At time: 1700,	clk: 1
+At time: 1800,	clk: 0
+At time: 1900,	clk: 1
+At time: 2000,	clk: 0
+At time: 2100,	clk: 1
+At time: 2200,	clk: 0
+At time: 2200,	b: 0
+At time: 2300,	clk: 1
+At time: 2400,	clk: 0
+At time: 2500,	clk: 1
+At time: 2600,	clk: 0
+At time: 2700,	clk: 1
+At time: 2800,	clk: 0
+At time: 2900,	clk: 1
+At time: 2900,	b: 1
+At time: 3000,	clk: 0
+At time: 3100,	clk: 1
+At time: 3200,	clk: 0
+At time: 3300,	clk: 1
+At time: 3400,	clk: 0
+At time: 3500,	clk: 1
+At time: 3600,	clk: 0
+At time: 3600,	b: 0
+At time: 3700,	clk: 1
+At time: 3800,	clk: 0
+At time: 3900,	clk: 1
+At time: 4000,	clk: 0
+At time: 4100,	clk: 1
+At time: 4200,	clk: 0
+At time: 4300,	clk: 1
+At time: 4300,	b: 1
+At time: 4400,	clk: 0
+At time: 4500,	clk: 1
+At time: 4600,	clk: 0
+At time: 4700,	clk: 1
+At time: 4800,	clk: 0
+At time: 4900,	clk: 1
+At time: 5000,	clk: 0
+At time: 5000,	b: 0
+
+</pre>
+
+
+   <p>
+
+   </body></html>
+

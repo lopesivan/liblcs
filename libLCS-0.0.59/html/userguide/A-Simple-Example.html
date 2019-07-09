@@ -1,0 +1,278 @@
+<html lang="en">
+<head>
+<title>A Simple Example - libLCS Userguide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="libLCS Userguide">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Introduction-to-libLCS.html#Introduction-to-libLCS" title="Introduction to libLCS">
+<link rel="prev" href="Basics.html#Basics" title="Basics">
+<link rel="next" href="Logic-Gates.html#Logic-Gates" title="Logic Gates">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
+Copyright (C) 2006, 2007 Siva Chandra.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="A-Simple-Example"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Logic-Gates.html#Logic-Gates">Logic Gates</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Basics.html#Basics">Basics</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Introduction-to-libLCS.html#Introduction-to-libLCS">Introduction to libLCS</a>
+<hr>
+</div>
+
+<h3 class="section">3.2 A Simple Example</h3>
+
+<p>
+In this section, a simple example is presented which will help a new libLCS user to get started. Though simple, it
+will introduce the basic constructs and a few of the 'off-the-shelf' logic gate modules provided in libLCS.
+
+
+<h4 class="subsection">3.2.1 XOR gate using off-the-shelf AND, OR and NOT gates</h4>
+
+<p>
+We will build and simulate a circuit which behaves like a 2-input XOR gate using only AND, OR and NOT gates. Let 
+<code>a</code> and <code>b</code> be the inputs to our circuit and let <code>s</code> be the output. Then, the boolean function for 
+<code>s</code> is:
+
+<pre class="example">     s = ab' + a'b 
+</pre>
+   <p>
+Hence, to generate <code>s</code> from <code>a</code> and <code>b</code> we require two 2-input AND gates, one 2-input OR gate, and two 
+NOT gates. The circuit diagram is as follows (the small circles/bubbles represent NOT gates):
+
+<blockquote>
+<div align="center"><img src="xor_example.jpg" alt="xor_example.jpg"></div>
+   </blockquote>
+   
+
+<h5 class="subsubsection">3.2.1.1 Circuit description</h5>
+
+<p>
+Each node in the above circuit translates into a bus in the case of libLCS. As marked in the circuit, seven 
+single-line busses <code>a, b, a_, b_, p1, p2</code> and <code>s</code> are required to describe the circuit. The first step 
+in our program will be to declare these 7 single-line bus objects. Busses are encapsulated into a template class 
+<code>Bus&lt;int bits&gt;</code>. The number <code>bits</code> denotes the number of lines in the bus and takes a default value
+of 1. We will declare the bus objects for our circuit as follows.
+
+<pre class="example">     Bus&lt;1&gt; a, b, a_, b_, p1, p2, s; // The bus names are same as 
+                                     // that in the diagram above.
+                                     // The template argument 1
+                                     // denotes single-line busses.
+</pre>
+   <p>
+After declaring the busses in the circuit, the next step is to initialise the logic gate modules in the circuit. 
+We will first initialise the NOT gates. The NOT gate modules are provided as a template class 
+<code>Not&lt;unsinged int delay&gt;</code>. The <code>delay</code> parameter denotes the propogation delay of the NOT gate. It takes a 
+default value of zero. The NOT gate initialisation is done as follows.
+
+<pre class="example">     Not&lt;&gt; ng1(a_, a), ng2(b_, b); // We donot pass any template paremeters
+                                   // to the NOT gate class as we shall use 
+                                   // the default value of 0 for the delay 
+                                   // parameter.
+</pre>
+   <p>
+Notice the order of arguments being passed to the NOT gate constructors. The output bus is the first argument, and the 
+input bus is the second argument.
+
+   <pre class="sp">
+
+</pre>
+
+We shall next initialise the AND gate modules of our circuit. The AND gate modules are provided as a class template
+<code>And&lt;int inbits, unsigned int delay&gt;</code>. The parameter <code>inbits</code> denotes the number of lines in the input bus 
+to the AND gate. For our circuit we require two input AND gates. Hence, we will use a value of 2 for the template 
+parameter <code>inbits</code>. The second template parameter denotes the input to output propogation delay taking a default 
+value of zero. 
+
+   <pre class="sp">
+
+</pre>
+
+A two input AND gate will require a two-line bus as input. However, we have declared only single-line busses. 
+libLCS provides an overloaded <code>operator,</code> with which one can concatenate two busses to form wider busses. 
+We will make use of this concatenation operator to initialise the two 2-input AND gates required for our circuit.
+The order of  arguments being passed to the AND gate constructors is same as that in the case of NOT gates - the 
+output bus is the first argument and the input bus is the second argument.
+
+<pre class="example">     And&lt;2&gt; ag1(p1, (a,b_)), ag2(p2, (a_,b)); // Notice the use of the template parameter of 
+                                              // 2 to denote a 2-input AND gate. The second 
+                                              // template parameter is not passed to the AND 
+                                              // gate class as we shall make use of the default 
+                                              // value of zero for the delay. Also, the ',' 
+                                              // operator is used to concatenate single-line 
+                                              // busses into two-line busses.
+</pre>
+   <p>
+The 2-input OR gate module is initialised in a similar manner.
+
+<pre class="example">     lcs::Or&lt;2&gt; og(s, (p1,p2));
+</pre>
+   <p>
+See the section <a href="Logic-Gates.html#Logic-Gates">Logic Gates</a> for more information on logic gate class templates.
+
+
+<h5 class="subsubsection">3.2.1.2 The class <code>Tester</code></h5>
+
+<p>
+With the above OR gate initialisation, our circuit is completely described. However, we will also need a way to test 
+our circuit with different inputs. For this, libLCS provides a template class <code>Tester&lt;int inbits&gt;</code>. A 
+<code>Tester</code> object will have to be initialised by passing a bus object to the constructor. The template parameter 
+<code>inbits</code> should be the same as the width of the bus which passed as an argument to the constructor. 
+
+   <pre class="sp">
+
+</pre>
+
+At every clock state change, the <code>Tester</code> object feeds a different value onto the bus object with which it was 
+created (A libLCS simulation system has a clock running in the background. This clock has a default pulse width of 
+100 system time units. The system clock and system time are introduced in detail in the section 
+<a href="System-Time-and-Sequential-Circuit-Elements.html#System-Time-and-Sequential-Circuit-Elements">System Time and Sequential Circuit Elements</a>). The values it feeds are in sequence from 0 to 2w - 1, where w is 
+the width of the bus with which it was created. For our circuit, we will make use of a <code>Tester</code> object to feed 
+different values to the inputs <code>a</code> and <code>b</code> as follows. 
+
+<pre class="example">     Tester&lt;2&gt; tester((a,b)); // The template parameter 2 indicates the bus width of 
+                              // the input bus to our circuit.
+</pre>
+   <p>
+NOTE: The <code>Tester</code> class is a very simple utility class. No more than one <code>Tester</code> object should be 
+initialised for a given simulation.
+
+
+<h5 class="subsubsection">3.2.1.3 The class <code>ChangeMonitor</code> and exporting value changes to a VCD file</h5>
+
+<p>
+Testing a circuit would not only require feeding proper inputs, one should also be able to monitor the different 
+signals in the circuit to verify the correctness. libLCS provides a class <code>ChangeMonitor&lt;int width&gt;</code> for this. 
+An object of this class should be instantiated by passing two arguments to the constructor - a bus object and an 
+<code>std::string</code> variable. Then, the initialised <code>ChangeMonitor</code> object will monitor the 
+bus line states and reports whenever a change occurs. The <code>std::string</code> variable passed to the constructor is 
+used as a name for the bus when reporting changes. The template parameter <code>width</code> should be the same as the 
+width of the bus being monitered. For our circuit, we will make use of two <code>ChangeMonitor</code> objects: one to 
+monitor the inputs, the other to monitor the output. This is done as follows.
+
+<pre class="example">     ChangeMonitor&lt;2&gt; inputMonitor((a,b), "Input", DUMP_ON); // The template parameter 2 indicates the  
+                                                             // bus width of the input bus to our circuit.
+     ChangeMonitor&lt;1&gt; outputMonitor(s, "Output", DUMP_ON);   // The template parameter 1 indicates the bus  
+                                                             // width of the output bus to our circuit.
+</pre>
+   <p>
+Note the additional parameter, <code>DUMP_ON</code>, passed to the ChangeMonitor constructors. This indicates that the 
+states of the bus lines, which are being monitored, should be dumped into a VCD file. If you do not want them to be 
+dumped, then you can either omit the last parameter, or pass <code>DUMP_OFF</code> instead of <code>DUMP_ON</code>.
+
+
+<h5 class="subsubsection">3.2.1.4 The simulation</h5>
+
+<p>
+After all the circuit elements are setup, we need to start the simulation. Before we start, we also need to set the 
+time at which the simulation should stop. This is done by a call to the static function <code>Simulation::setStopTime</code>. 
+After setting the stop time, we should start the simulation by a call to the static function <code>Simulation::start</code>.
+
+   <pre class="sp">
+
+</pre>
+
+For our simulation, we will set the stop time at 1000 time units. The complete program which simulates our circuit is 
+as follows. 
+
+<pre class="example"><pre class="verbatim">     
+     // Include the only required header file.
+     #include &lt;lcs/lcs.h>
+     
+     // All libLCS constructs are defined under
+     // the namespace lcs.
+     using namespace lcs;
+     
+     int main()
+     {
+         Bus&lt;1> a, b, a_, b_, p1, p2, s;
+         
+         Not&lt;> ng1(a_, a), ng2(b_, b);
+         And&lt;2> ag1(p1, (a,b_)), ag2(p2, (a_,b));
+         Or&lt;2> og(s, (p1,p2));
+     
+         ChangeMonitor&lt;2> inputMonitor((a,b), "Input", DUMP_ON);
+         ChangeMonitor&lt;1> outputMonitor(s, "Output", DUMP_ON);
+     
+         Tester&lt;2> tester((a,b));
+     
+         Simulation::setStopTime(1000);
+         Simulation::start();
+     
+         return 0;
+     }
+</pre>
+</pre>
+   <p>
+When the above program is compiled and run, the following output will be obtained on the standard output device. 
+(See the section <a href="Basics.html#Basics">Basics</a> for information on compiling a program which uses libLCS.)
+
+<pre class="example">     At time: 0,     Input: 00
+     At time: 0,     Output: 0
+     At time: 200,   Input: 01
+     At time: 200,   Output: 1
+     At time: 300,   Input: 10
+     At time: 400,   Input: 11
+     At time: 400,   Output: 0
+</pre>
+   <p>
+We will now try to understand what the above output means. When the circuit is turned on (ie. when that the simulation 
+starts at time 0), the object <code>tester</code> sets the busses <code>a</code> and <code>b</code> to a value of zero each. 
+Correspondingly, the output changes to zero from an unknown value at time 0.
+
+   <pre class="sp">
+
+</pre>
+
+The object <code>tester</code> feeds sequential values at every clock state change, starting from a value of 0 . The default 
+pulse width of the clock in libLCS is 100 system time units. Hence, a value of 0 is fed onto the input bus <code>(a,b)</code> 
+at the first clock pulse occuring at 100 time units. The output corresponding to this input is 0. However, since the 
+output and input values were 0 even before the first clock pulse, the <code>ChangeMonitor</code> objects does not display 
+the input and output states at the time of 100 units. 
+
+   <pre class="sp">
+
+</pre>
+
+When the input changes to a value 01 at 200 time units, the output correspondingly changes to 1. When the input changes 
+to 10 at 300 time units, the correct output should be 1, which is the same as that before 300 time units. Hence the 
+change monitor does not report anything about the output as the output did not change from the previous value. When the 
+input changes to 11 at 400 time units, the output changes to 0 from a value of 1. This is reported accordingly as there
+is a change from the previous value.
+
+
+<h5 class="subsubsection">3.2.1.5 The VCD file</h5>
+
+<p>
+Apart from the display of the simlation results on the standard output, we requested that the line states of the busses 
+being monitored should be dumped into a VCD file. By default, the values are dumped into a file with name "dump.vcd" in 
+the directory in which the simulation was executed. If one wants a different name for the VCD file, they should set 
+it using the static function <code>Simulation::setDumpFileName(filename)</code>, where <code>filename</code> is of type 
+<code>std::string</code>. The dumped VCD file can be viewed using a VCD viewer. GTKWave is one such excellent tool which can 
+plot the VCD wave forms. The screenshot of the GTKWave plot of the VCD file which was generated from the above 
+simulation is as follows:
+
+<blockquote>
+<div align="center"><img src="xor_using_and_or_not.jpg" alt="jpg"></div>
+   </blockquote>
+   
+
+   <p>
+
+   </body></html>
+

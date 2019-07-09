@@ -1,0 +1,450 @@
+<html lang="en">
+<head>
+<title>Example Module 2 - libLCS Userguide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="libLCS Userguide">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Modules.html#Modules" title="Modules">
+<link rel="prev" href="Example-Module-1.html#Example-Module-1" title="Example Module 1">
+<link rel="next" href="Example-Module-3.html#Example-Module-3" title="Example Module 3">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
+Copyright (C) 2006, 2007 Siva Chandra.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Example-Module-2"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Example-Module-3.html#Example-Module-3">Example Module 3</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Example-Module-1.html#Example-Module-1">Example Module 1</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Modules.html#Modules">Modules</a>
+<hr>
+</div>
+
+<h3 class="section">4.2 Example Module 2</h3>
+
+<p>
+In this section we will consider an example which will illustrate the usage of constructs which one should make use 
+of if one is desirous of building a module which is described completely in the form of a behavioral model. This example, 
+as in case of the previous example, builds a 1-bit fulladder module. Before we present the example, we shall present the 
+basics of the concepts involved.
+
+
+<h4 class="subsection">4.2.1 Line Events</h4>
+
+<p>
+A module should respond to the changes in the line states of it's input busses. It should repsond by computing the line 
+state values of its output busses (corresponding to the new inputs), and write these values onto the output busses. In 
+libLCS, changes in the states of individual bus lines are called as <b>line events</b>. Hence, a module should repsond to 
+line events on the lines of it's input busses. The different possible line events are specified in the enumerated type 
+<code>LineEvent</code> (defined in the header file <code>linevent.h</code>). The three values a <code>LineEvent</code> variable can take 
+are as follows:
+
+     <ol type=1 start=1>
+
+<li><code>LINE_STATE_CHANGE</code> - This value denotes an event corresponding to a change of state of a line. For example, 
+a state transition from <code>LOW</code> to <code>HIGH</code> or <code>HIGH</code> to <code>LOW</code> on a line leads to a 
+<code>LINE_STATE_CHANGE</code> event.
+
+<li><code>LINE_POS_EDGE</code> - This value denotes an event correspoding to a positive edge in the state transition. 
+That is, <code>LINE_POS_EDGE</code> event occurs when there is a state transition from <code>LOW</code> to <code>HIGH</code> on a line.
+
+<li><code>LINE_NEG_EDGE</code> - This value denotes an event correspoding to a negetive edge in the state transition. 
+That is, <code>LINE_NEG_EDGE</code> event occurs when there is a state transition from <code>HIGH</code> to <code>LOW</code> on a line.
+
+        </ol>
+
+
+<h4 class="subsection">4.2.2 Busses</h4>
+
+<p>
+There are three different types of busses in libLCS. So far in this document, we have considered only one of those types. 
+We will now list all three types of busses and their properties. It is very important to understand the capabilities and 
+usage of the different types of busses if one is desirous of building his/her own modules. This example will make use of 
+two of the types. The next example will make use of all the three types of busses. 
+
+     <ol type=1 start=1>
+
+<li><code>InputBus</code> - <code>InputBus</code> is a template class which encapsulates a read-only bus. It has been designed to 
+be read-only as the module to which it is an input should not have a write access over it. <code>InputBus</code> objects also 
+have features which enable them to drive modules by notifying the modules about line events occuring on their lines. 
+     <pre class="sp">
+     
+     </pre>
+     The <code>InputBus</code> template class requires a single integral template parameter which indicates the number of lines in 
+the bus. The declaration of this class is as follows:
+
+     <pre class="example">          template &lt;int bits&gt;
+          class InputBus;
+     </pre>
+     <p>
+<li><code>Bus</code> - <code>Bus</code> class objects are read and write busses. However, they do not have the ability to notify a 
+module about line events on their lines even though the <code>Bus</code> class is derived from the class <code>InputBus</code>.
+     <pre class="sp">
+     
+     </pre>
+     The class <code>Bus</code> is a template class requiring a single integral template parameter which indicates the number of 
+lines in the bus. The declaration of this class is as follows:
+
+     <pre class="example">          template &lt;int bits&gt;
+          class Bus;
+     </pre>
+     <p>
+<li><code>InOutBus</code> - <code>InOutBus</code> class objects are read and write busses which have the ability to notify a module
+about line events occuring on their lines. The <code>InOutBus</code> class is derived from the class <code>Bus</code>.
+     <pre class="sp">
+     
+     </pre>
+     The class <code>InOutBus</code> is a template class requiring a single integral template parameter which indicates the number of 
+lines in the bus. The declaration of this class is as follows:
+
+     <pre class="example">          template &lt;int bits&gt;
+          class InOutBus;
+     </pre>
+     <p>
+        </ol>
+
+The template parameters of each of the above bus classes assume a default value of 1.
+
+
+<h5 class="subsubsection">4.2.2.1 Header files of the bus classes</h5>
+
+<p>
+The various bus classes are defined in individual header files as follows: <code>bus.h</code> for the class <code>Bus</code>, 
+<code>inbus.h</code> for the class <code>InputBus</code>, and <code>inoutbus.h</code> for the class <code>InOutBus</code>.
+
+
+<h5 class="subsubsection">4.2.2.2 Inheritance heirarchy of the bus classes</h5>
+
+<p>
+The inheritance heirarchy of the three bus classes is as follows.
+
+<pre class="example">     InputBus
+        |
+        o-- Bus
+             |
+             o-- InOutBus
+</pre>
+   <p>
+As we can see from the above inheritance heirarchy (and also from the above description of the various bus classes), one 
+can use only <code>InOutBus</code> objects without ever using the classes <code>Bus</code> and <code>InputBus</code>. However, in order to 
+enforce strict access control by allowing access only when required, it should be made a practice to use the 
+proper bus class. This and the next example will illustrate when and why to use a particular bus class.
+
+
+<h4 class="subsection">4.2.3 The 1-bit fulladder</h4>
+
+<p>
+Below is the <i>black box</i> diagram of the 1-bit fulladder module which we will build in this section. The module will 
+represent a behavioral model of a 1-bit fulladder and will not consist of other smaller modules.
+
+<blockquote>
+<div align="center"><img src="1bit_fa_behav_model.jpg" alt="1bit_fa_behav_model.jpg"></div>
+   </blockquote>
+   
+In the above diagram, <code>a</code> and <code>b</code> are the single bit inputs to the fulladder, and <code>Cin</code> is the carry input. 
+<code>S</code> is the sum output, and <code>Cout</code> is the carry output. A hardware module translates into a module class in 
+libLCS. The module class definition, of the fulladder module shown in the above figure, is as follows.
+
+<pre class="example"><pre class="verbatim">     
+     // A module class, which has to listen to line events occuring
+     // on input busses, should be derived from the class Module.
+     class MyFullAdder : public Module
+     {
+     public:
+         // The constructor takes 5 arguments - 2 correspond to the outputs, and 3 
+         // correspond to the inputs. 
+         MyFullAdder(const Bus&lt;1> &amp;sum, const Bus&lt;1> &amp;cout, const InputBus&lt;1> &amp;ip1, 
+     		const InputBus&lt;1> &amp;ip2, const InputBus&lt;1> &amp;cin);
+     
+         // Module class destructor. 
+         ~MyFullAdder();
+     
+         // This is the function through which the module object is notifed about 
+         // LINE_STATE_CHANGE events occuring on its input busses. This function is 
+         // defined in the base class Module and has to be overriden in all the 
+         // derived classes which have to listen to LINE_STATE_CHANGE events on 
+         // their input busses.
+         virtual void onStateChange(int pid);
+     
+     private:
+         // An input bus object for each of the inputs.
+         InputBus&lt;1> a, b, Cin;
+     
+         // Output bus objects for the sum and carry outputs.
+         Bus&lt;1> S, Cout;
+     };
+</pre>
+</pre>
+   <p>
+The above module class definition captures all the salient features of a module which has to repsond to events 
+occuring on its input busses. Below is the list of these salient features.
+
+     <ol type=1 start=1>
+
+<li>The module class has to be derived from the class <code>Module</code>. The class <code>Module</code> defines few virtual 
+functions which have to be overriden in the derived class as neccessary. These functions are dicussed below.
+
+<li>The module class constructor should take the input and output busses as arguments.
+
+<li>The module class destructor should be explicitly declared and defined.
+
+<li>The line event action functions should be overriden in the derived module class. In the example above, we have 
+overriden the action function <code>onStateChange</code> (this function is declared as a virtual function in the class 
+<code>Module</code>). This function is called by an input bus when a <code>LINE_STATE_CHANGE</code> event occurs on one of its lines.
+Hence, this function should calculate the output bus line states corresponding to the new input line states and write 
+them onto the output busses.
+     <pre class="sp">
+     
+     </pre>
+     There are two more action functions which can be overriden in the derived module class: <code>onNegEdge</code> and 
+<code>onPosEdge</code>. Modules which have to respond to <code>LINE_NEG_EDGE</code> and <code>LINE_POS_EDGE</code> events should override 
+the functions <code>onNegEdge</code> and <code>onPosEdge</code> respectively.
+
+        </ol>
+
+
+<h5 class="subsubsection">4.2.3.1 Constructor</h5>
+
+<p>
+By convention, the constructor of any module class should only take input and output busses as arguments. Below is the 
+implementation of the constructor of the <code>MyFullAdder</code> module class.
+
+<pre class="example"><pre class="verbatim">     
+     // The argument list should have output busses followed by input busses
+     // by convention. This is the same convention followed with the 
+     // off-the-shelf module classes in libLCS.
+     MyFullAdder::MyFullAdder(const Bus&lt;1> &amp;sum, const Bus&lt;1> cout, 
+                              const InputBus&lt;1> in1, const InputBus&lt;1> in2, const InputBus&lt;1> cin)
+     	   : Module(), a(in1), b(in2), Cin(cin), S(sum), Cout(cout) // Member initialiser list.
+     {
+         // Each of the input busses should be asked to notify 
+         // the module about LINE_STATE_CHANGE events on their 
+         // lines.
+         a.notify(this, LINE_STATE_CHANGE, 0);
+         b.notify(this, LINE_STATE_CHANGE, 0);
+         Cin.notify(this, LINE_STATE_CHANGE, 0);
+     
+         // This will make the output bus line states to 
+         // correspond to the input bus line states.
+         onStateChange(0);
+     }
+</pre>
+</pre>
+   <p>
+As we can see from the above constructor implementation, each of the input busses should be asked to notify the module
+class about line events occuring on their lines. This is done through function <code>notify</code> (which is a member function 
+of the class <code>InputBus</code>). Note that, even though the class <code>Bus</code> is a subclass of the class <code>InputBus</code>, 
+one cannot use objects of class <code>Bus</code> to notify a module about line events on their lines. The function notify is 
+declared as <code>private</code> in the class <code>Bus</code>. This forces the user to use objects of type <code>InputBus</code> as input 
+busses to modules. Busses of type <code>InputBus</code> come with an added protection that they are read-only. It has been 
+designed this way as modules should not be allowed to write onto their input busses!
+   <pre class="sp">
+
+</pre>
+The prototype of the function <code>InputBus::notify</code> is as follows:
+
+<pre class="example">     void notify(Module *mod, const LineState &amp;event, const int &amp;portId, const int &amp;line=-1);
+</pre>
+   <p>
+The first argument is a pointer to the module to which it has to notify about line events. The second argument specifies 
+the type of line event which has to be notified to the module. In our case, we have requested to notify when a 
+<code>LINE_STATE_CHANGE</code> event occurs on the bus lines. One can also request to be notified of <code>LINE_POS_EDGE</code> or 
+<code>LINE_NEG_EDGE</code> events. The third argument to the notify function is the portId. The input bus will notify the 
+occurance of a line event to the module using this ID. This helps the module identify as to which of the input busses is 
+making the notification. The module can then respond differently to line events occuring on different input busses based 
+on the portId. In our case however, we have used 0 as the portId for all the input busses as our module will take the 
+same action when a <code>LINE_STATE_CHANGE</code> event occurs on any of its input busses. The last and the final argument to 
+the notify function has a default value of -1. A value of -1 indicates that the bus should make the notification when the 
+desired line event occurs on any of its lines. If the module requires a different notification for each of the bus lines, 
+then it has to request a different notification for each line using the line number as the fourth argument (and also a 
+different portId for each line). 
+
+
+<h5 class="subsubsection">4.2.3.2 Event action function</h5>
+
+<p>
+Event action functions are the functions which respond to the line events occuring on input bus lines of a module. 
+Their duty is to take the necessary action as per the events occuring on the input lines. Typically, they recalculate 
+the output bus line states, corresponding to the new input bus lines states, and write the results onto the output bus 
+lines accordingly. There are three event action functions which a module can use to respond to line events occuring on 
+its input busses: 1. <code>onStateChange</code>, 2. <code>onPosEgde</code>, 3. <code>onNegEdge</code>. An input bus will call one of 
+these functions depending on the type of request made through the notify function in the module class constructor. In 
+the case of <code>MyFullAdder</code> module, we have requested notification of only the <code>LINE_STATE_CHANGE</code> event. Hence, 
+we need to declare and define only the <code>onStateChange</code> function. The input busses will then notify about a 
+<code>LINE_STATE_CHANGE</code> event to the <code>MyFullAdder</code> object by making a call to the <code>onStateChange</code> function.
+
+   <pre class="sp">
+
+</pre>
+The event action functions take one argument. This argument can be used as an ID to identify the bus or line on which 
+the event has occured. A different action can be taken if different IDs are used for different busses and lines. In the 
+case of <code>MyFullAdder</code> however, we have used a common ID for all the input busses as a <code>LINE_STATE_CHANGE</code> 
+event on any of its bus lines will lead to a common action of re-calculating the output bus line states and writing
+them onto the output bus lines. The implementation of the <code>onStateChange</code> function is as follows.
+
+<pre class="example"><pre class="verbatim">     
+     void MyFullAdder::onStateChange(int portId)
+     {
+         S = a&amp;~b&amp;~c | ~a&amp;b&amp;~c | ~a&amp;~b&amp;c | a&amp;b&amp;c;
+         Cout = a&amp;b&amp;~c | a&amp;~b&amp;c | ~a&amp;b&amp;c | a&amp;b&amp;c;
+     }
+</pre>
+</pre>
+   <p>
+
+<h5 class="subsubsection">4.2.3.3 Destructor</h5>
+
+<p>
+The following is the implementation of the destructor of the <code>MyFullAdder</code> module class.
+
+<pre class="example"><pre class="verbatim">     
+     MyFullAdder::~MyFullAdder()
+     {
+         // The stopNotification function should be called by 
+         // exactly the same parameters, in the same order as 
+         // they were passed to the notify function in the 
+         // constructor of the module class.
+         a.stopNotification(this, LINE_STATE_CHANGE, 0);
+         b.stopNotification(this, LINE_STATE_CHANGE, 0);
+         Cin.stopNotification(this, LINE_STATE_CHANGE, 0);
+     }
+</pre>
+</pre>
+   <p>
+The destrcutor should merely ask all the input busses, which have been notifying line events to the module, to stop 
+notifying. Failing to do this will lead to invalid memory references by the input bus objects.
+
+
+<h5 class="subsubsection">4.2.3.4 The complete example</h5>
+
+<p>
+Below is the complete listing of the program which defines the <code>MyFullAdder</code> class and tests it.
+
+<pre class="example"><pre class="verbatim">     
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     
+     // A module class, which has to listen to line events occuring
+     // on input busses, should be derived from the class Module.
+     class MyFullAdder : public Module
+     {
+     public:
+         // The constructor takes 5 arguments - 2 correspond to the outputs, and 3 
+         // correspond to the inputs. 
+         MyFullAdder(const Bus&lt;1> &amp;sum, const Bus&lt;1> &amp;cout, const InputBus&lt;1> &amp;ip1, 
+     		const InputBus&lt;1> &amp;ip2, const InputBus&lt;1> &amp;cin);
+     
+         // Module class destructor. 
+         ~MyFullAdder();
+     
+         // This is the function through which the module object is notifed about 
+         // LINE_STATE_CHANGE events occuring on its input busses. This function is 
+         // defined in the base class Module and has to be overriden in all the 
+         // derived classes which have to listen to LINE_STATE_CHANGE events on 
+         // their input busses.
+         virtual void onStateChange(int pid);
+     
+     private:
+         // An input bus object for each of the inputs.
+         InputBus&lt;1> a, b, Cin;
+     
+         // Output bus objects for the sum and carry outputs.
+         Bus&lt;1> S, Cout;
+     };
+     
+     // The argument list should have output busses followed by input busses
+     // by convention. This is the same convention followed with the 
+     // off-the-shelf module classes in libLCS.
+     MyFullAdder::MyFullAdder(const Bus&lt;1> &amp;sum, const Bus&lt;1> &amp;cout, 
+                              const InputBus&lt;1> &amp;in1, const InputBus&lt;1> &amp;in2, const InputBus&lt;1> &amp;cin)
+     	   : Module(), a(in1), b(in2), Cin(cin), S(sum), Cout(cout) // Member initialiser list.
+     {
+         // Each of the input busses should be asked to notify 
+         // the module about LINE_STATE_CHANGE events on their 
+         // lines.
+         a.notify(this, LINE_STATE_CHANGE, 0);
+         b.notify(this, LINE_STATE_CHANGE, 0);
+         Cin.notify(this, LINE_STATE_CHANGE, 0);
+     
+         // This will make the output bus line states to 
+         // correspond to the input bus line states.
+         onStateChange(0);
+     }
+     
+     void MyFullAdder::onStateChange(int portId)
+     {
+         S = a&amp;~b&amp;~Cin | ~a&amp;b&amp;~Cin | ~a&amp;~b&amp;Cin | a&amp;b&amp;Cin;
+         Cout = a&amp;b&amp;~Cin | a&amp;~b&amp;Cin | ~a&amp;b&amp;Cin | a&amp;b&amp;Cin;
+     }
+     
+     MyFullAdder::~MyFullAdder()
+     {
+         // The stopNotification function should be called by 
+         // exactly the same parameters, in the same order as 
+         // they were passed to the notify function in the 
+         // constructor of the module class.
+         a.stopNotification(this, LINE_STATE_CHANGE, 0);
+         b.stopNotification(this, LINE_STATE_CHANGE, 0);
+         Cin.stopNotification(this, LINE_STATE_CHANGE, 0);
+     }
+     
+     int main(void)
+     {
+         Bus&lt;1> a, b, Cin, S, Cout;
+         MyFullAdder adder(S, Cout, a, b, Cin);
+     
+         Tester&lt;3> tester((a,b,Cin));
+         
+         ChangeMonitor&lt;3> cmin((a,b,Cin), "Input");
+         ChangeMonitor&lt;2> cmop((S,Cout), "Sum");
+     
+         Simulation::setStopTime(1000);
+         Simulation::start();
+     
+         return 0;
+     }
+</pre>
+</pre>
+   <p>
+The output when the above program is compiled and run is as follows.
+
+<pre class="verbatim">
+
+At time: 0,	Input: 000
+At time: 0,	Sum: 00
+At time: 200,	Input: 001
+At time: 200,	Sum: 01
+At time: 300,	Input: 010
+At time: 400,	Input: 011
+At time: 400,	Sum: 10
+At time: 500,	Input: 100
+At time: 500,	Sum: 01
+At time: 600,	Input: 101
+At time: 600,	Sum: 10
+At time: 700,	Input: 110
+At time: 800,	Input: 111
+At time: 800,	Sum: 11
+
+</pre>
+
+
+   <p>
+
+   </body></html>
+

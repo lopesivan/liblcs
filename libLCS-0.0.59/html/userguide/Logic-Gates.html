@@ -1,0 +1,147 @@
+<html lang="en">
+<head>
+<title>Logic Gates - libLCS Userguide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="libLCS Userguide">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Introduction-to-libLCS.html#Introduction-to-libLCS" title="Introduction to libLCS">
+<link rel="prev" href="A-Simple-Example.html#A-Simple-Example" title="A Simple Example">
+<link rel="next" href="System-Time-and-Sequential-Circuit-Elements.html#System-Time-and-Sequential-Circuit-Elements" title="System Time and Sequential Circuit Elements">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
+Copyright (C) 2006, 2007 Siva Chandra.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Logic-Gates"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="System-Time-and-Sequential-Circuit-Elements.html#System-Time-and-Sequential-Circuit-Elements">System Time and Sequential Circuit Elements</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="A-Simple-Example.html#A-Simple-Example">A Simple Example</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Introduction-to-libLCS.html#Introduction-to-libLCS">Introduction to libLCS</a>
+<hr>
+</div>
+
+<h3 class="section">3.3 Logic Gates</h3>
+
+<p>
+Logic gates are provided as <em>primitives</em> in Verilog. In libLCS, all circuit elements which have well defined 
+sets of inputs and outputs are called <em>Modules</em>. Since logic gates also have well defined inputs and outputs, 
+they are also treated as modules. 
+
+
+<h4 class="subsection">3.3.1 The logic gate class templates</h4>
+
+<p>
+All logic gate modules in libLCS (except the NOT gate module) are provided as class templates requiring two template 
+parameters. The first template argument denotes the number of inputs to the gate, and the second template parameter 
+denotes the input to output propogation delay of the gate. Since a NOT gate can have only one input, it is provided 
+as a class template taking only one template parameter which represents the input to output propogation delay of the 
+NOT gate. The following is the list of all logic gate class templates provided in libLCS.
+
+     <ol type=1 start=1>
+
+<li>The AND gate class template:
+     <pre class="example">          template&lt;unsigned int width = 1, unsigned int delay = 0&gt;
+          class And;
+     </pre>
+     <p>
+<li>The OR gate class template:
+     <pre class="example">          template&lt;unsigned int width = 1, unsigned int delay = 0&gt;
+          class Or;
+     </pre>
+     <p>
+<li>The NAND gate class template:
+     <pre class="example">          template&lt;unsigned int width = 1, unsigned int delay = 0&gt;
+          class Nand;
+     </pre>
+     <p>
+<li>The NOR gate class template:
+     <pre class="example">          template&lt;unsigned int width = 1, unsigned int delay = 0&gt;
+          class Nor;
+     </pre>
+     <p>
+<li>The XOR gate class template:
+     <pre class="example">          template&lt;unsigned int width = 1, unsigned int delay = 0&gt;
+          class Xor;
+     </pre>
+     <p>
+<li>The NOT gate class template:
+     <pre class="example">          template&lt;unsigned int delay = 0&gt;
+          class Not;
+     </pre>
+     <p>
+        </ol>
+
+NOTE: The template parameters have a default value. This is especially usefull in the case of often used zero delay 
+logic gates.
+
+
+<h4 class="subsection">3.3.2 The logic gate constructors</h4>
+
+<p>
+All logic gate module constructors require two arguments. The first argument represents the output bus, and the second 
+argument represents the input bus. For example, if one is desirous of initialising a 5 input XOR gate with zero 
+propogation delay, then he/she should do the following.
+
+<pre class="example">     
+     Bus&lt;5&gt; inBus;
+     Bus&lt;1&gt; outBus;
+     
+     Xor&lt;5&gt; xorGate(outBus, inBus); // The template parameter for delay is not explicitly mentioned.
+                                    // Hence, the default value of zero is implied.
+     
+</pre>
+   <p>
+
+<h4 class="subsection">3.3.3 Logic gate header files</h4>
+
+<p>
+Following is a list of all the logic gate modules and the corresponding header file in which they are defined.
+
+     <ol type=1 start=1>
+
+<li>AND gate module
+     <pre class="example">          lcs/and.h
+     </pre>
+     <p>
+<li>OR gate module
+     <pre class="example">          lcs/or.h
+     </pre>
+     <p>
+<li>NAND gate module
+     <pre class="example">          lcs/nand.h
+     </pre>
+     <p>
+<li>NOR gate module
+     <pre class="example">          lcs/nor.h
+     </pre>
+     <p>
+<li>NOT gate module
+     <pre class="example">          lcs/not.h
+     </pre>
+     <p>
+<li>XOR gate module
+     <pre class="example">          lcs/xor.h
+     </pre>
+     <p>
+        </ol>
+
+
+   <p>
+
+   </body></html>
+

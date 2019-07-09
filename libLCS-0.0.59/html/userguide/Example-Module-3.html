@@ -1,0 +1,225 @@
+<html lang="en">
+<head>
+<title>Example Module 3 - libLCS Userguide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="libLCS Userguide">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Modules.html#Modules" title="Modules">
+<link rel="prev" href="Example-Module-2.html#Example-Module-2" title="Example Module 2">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
+Copyright (C) 2006, 2007 Siva Chandra.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Example-Module-3"></a>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Example-Module-2.html#Example-Module-2">Example Module 2</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Modules.html#Modules">Modules</a>
+<hr>
+</div>
+
+<h3 class="section">4.3 Example Module 3</h3>
+
+<p>
+In this section, we will build a module which consists of one other module and other behavioral constructs. This 
+will serve as an example which illustrates building modules which are a mixture of behavioral constructs and other 
+smaller modules. To keep it simple but illustrative, we will build a 2-bit full adder module which consists of two 
+1-bit full adder components. One of the components is the off-the-shelf 1-bit full adder module provided in libLCS. 
+The other component is a 1-bit full adder built using behavioral constructs. The block diagram for such a scheme is 
+as follows.
+
+<blockquote>
+<div align="center"><img src="2bit_fa_module.jpg" alt="2bit_fa_module.jpg"></div>
+   </blockquote>
+   
+
+<h4 class="subsection">4.3.1 The <code>InOutBus</code></h4>
+
+<p>
+In the above block diagram, <code>a0</code> and <code>a1</code> are inputs to the off-the-shelf full adder component of 
+our 2-bit full adder, and <code>b0</code> and <code>b1</code> are inputs to the 1-bit full adder component built using behavioral 
+constructs. Also, the behavioral component takes the carry output <code>c1</code> of the off-the-shelf full adder module as 
+carry input. Hence (refer to <a href="Example-Module-1.html#Example-Module-1">Example Module 1</a> and <a href="Example-Module-2.html#Example-Module-2">Example Module 2</a>), our 2-bit full adder module will need 
+to respond to events occuring on the busses <code>b0</code>, <code>b1</code> and <code>c1</code>. Since <code>b0</code> and <code>b1</code> are 
+inputs to the 2-bit full adder, in building our module, we can declare them to be of type  <code>InputBus</code> (this is 
+similar to how we used busses of type <code>InputBus</code> as inputs to the 1-bit bit full adder module in building 
+<a href="Example-Module-2.html#Example-Module-2">Example Module 2</a>.) However, input Busses are read only busses. Because of this constraint, we cannot have bus <code>c1</code> 
+to be of type <code>InputBus</code>. Bus <code>c1</code> should be writable by the off-the-shelf full adder module, while having 
+the capacity to notify the 2-bit full adder module about events occuring on its lines. To facilitate such cases in 
+general, libLCS provides a different type of bus called the <code>InOutBus</code>. Hence, we will declare the bus <code>c1</code> 
+to be of type <code>InOutBus</code> in our 2-bit full adder implementation. The declaration of the <code>InOutBus</code> class, 
+and the include file pertaining to it, are presented in the discussion building up to the presentation of 
+<a href="Example-Module-2.html#Example-Module-2">Example Module 2</a> in the previous section.
+
+
+<h4 class="subsection">4.3.2 The 2-bit full adder implementation</h4>
+
+<p>
+Below is the complete listing of the 2-bit full adder module definitaion and its implementation. Notice the declaration
+of the bus <code>c1</code> to be of type <code>InOutBus</code>. Apart from this new construct which we have learnt in this section, 
+the other constructs and concepts used were learnt in <a href="Example-Module-1.html#Example-Module-1">Example Module 1</a> and <a href="Example-Module-2.html#Example-Module-2">Example Module 2</a>. See the comments 
+inlined in the listing for more information.
+
+<pre class="example"><pre class="verbatim">     
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     
+     // Since the module is going to have few behavioral constructs, we should derive 
+     // it from the base class lcs::Module.
+     class TwoBitFullAdder : public Module
+     {
+     public:
+         // The constructor takes arguments which establish the external connections.
+         TwoBitFullAdder(const Bus&lt;3> &amp;sum, const InputBus&lt;2> &amp;A, const InputBus&lt;2> &amp;B);
+     
+         ~TwoBitFullAdder();
+     
+         // This is a virtual function which has to be overidden. It is declared in the 
+         // base class Module. This is the function which should incorporate the behavioral
+         // 1-bit fulladder component.
+         virtual void onStateChange(int portId);
+     
+     private:
+     
+         InOutBus&lt;1> c1;   // The carry output of the off-the-shelf full adder component. 
+                           // It is declared as an InOutBus.
+         InputBus&lt;2> a, b; // The 2-line inputs to our 2-bit fulladder.
+         Bus&lt;3> s;         // The 3-line sum output of our full adder.
+         FullAdder *fa;    // The off-the-shelf fulladder module which will be created in 
+                           // the constructor.
+     };
+     
+     TwoBitFullAdder::TwoBitFullAdder(const Bus&lt;3> &amp;sum, const InputBus&lt;2> &amp;A, const InputBus&lt;2> &amp;B)
+         : Module(), c1(0), a(A), b(B), s(sum)
+     {
+         Bus&lt;> cin(0); // The carry input to the fulladder module.
+         fa = new FullAdder(s[0], c1, a[0], b[0], cin); // Initialising the fulladder module.
+     
+         // The 2-bit fulladder module has to respond to state changes in the relevant 
+         // input bits and the carry output of the off-the-shelf fulladder module. Hence 
+         // the module has to request for notification of line events from these signals. 
+         // Note here that the carry input c1 for the behavioral component is declared to 
+         // be of type InOutBus. If it were to be declared as a normal Bus object, 
+         // then it will not be able to notify about the events on its lines. If it were 
+         // to be declared as an InputBus, then the off-the-shelf full adder module will 
+         // not be able to write on to it.
+         c1.notify(this, LINE_STATE_CHANGE, 1);
+         a.notify(this, LINE_STATE_CHANGE, 2, 1);
+         b.notify(this, LINE_STATE_CHANGE, 3, 1);
+     }
+     
+     TwoBitFullAdder::~TwoBitFullAdder()
+     {
+         delete fa;
+     
+         c1.stopNotification(this, LINE_STATE_CHANGE, 1);
+         a.stopNotification(this, LINE_STATE_CHANGE, 2, 1);
+         b.stopNotification(this, LINE_STATE_CHANGE, 3, 1);
+     }
+     
+     void TwoBitFullAdder::onStateChange(int portId)
+     {
+         // When a state change occurs on of the lines c1[0] or a[1] or b[1],
+         // The behavioral model should compute the bit values for the second 
+         // and third sum output bits and write them onto the output bus. 
+         // This is done as follows.
+         s[1] = (~a[1] &amp; ~b[1] &amp; c1[0]) | (~a[1] &amp; b[1] &amp; ~c1[0]) |
+                         (a[1] &amp; ~b[1] &amp; ~c1[0]) | (a[1] &amp; b[1] &amp; c1[0]);;
+         s[2] = (~a[1] &amp; b[1] &amp; c1[0]) | (a[1] &amp; ~b[1] &amp; c1[0]) |
+                           (a[1] &amp; b[1] &amp; ~c1[0]) | (a[1] &amp; b[1] &amp; c1[0]);
+     }
+</pre>
+</pre>
+   <p>
+
+<h4 class="subsection">4.3.3 Test Program</h4>
+
+<p>
+Below is a simple program which illustrates the use of the above 2-bit full adder module. 
+
+<pre class="example"><pre class="verbatim">      
+     using namespace lcs;
+     
+     int main(void)
+     {
+         Bus&lt;2> a, b; // Inputs 
+         Bus&lt;3> sum;  // Sum output
+     
+         // Initialising a 2-bit fulladder module.
+         TwoBitFullAdder adder(sum, a, b);
+     
+         // A tester to generate inputs for the 2-bit fulladder module.
+         Tester&lt;4> tester((a, b)); 
+     
+         ChangeMonitor&lt;2> amon(a, "A");
+         ChangeMonitor&lt;2> bmon(b, "B");
+         ChangeMonitor&lt;3> smon(sum, "SUM");
+     
+         Simulation::setStopTime(2000);
+         Simulation::start();
+             
+         return 0;
+     }
+</pre>
+</pre>
+   <p>
+When the above program is compiled and run, the following is the output obtained.
+
+<pre class="example">     At time: 0,     A: 00
+     At time: 0,     B: 00
+     At time: 0,     SUM: 000
+     At time: 200,   A: 01
+     At time: 200,   SUM: 001
+     At time: 300,   A: 10
+     At time: 300,   SUM: 010
+     At time: 400,   A: 11
+     At time: 400,   SUM: 011
+     At time: 500,   A: 00
+     At time: 500,   B: 01
+     At time: 500,   SUM: 001
+     At time: 600,   A: 01
+     At time: 600,   SUM: 010
+     At time: 700,   A: 10
+     At time: 700,   SUM: 011
+     At time: 800,   A: 11
+     At time: 800,   SUM: 100
+     At time: 900,   A: 00
+     At time: 900,   B: 10
+     At time: 900,   SUM: 010
+     At time: 1000,  A: 01
+     At time: 1000,  SUM: 011
+     At time: 1100,  A: 10
+     At time: 1100,  SUM: 100
+     At time: 1200,  A: 11
+     At time: 1200,  SUM: 101
+     At time: 1300,  A: 00
+     At time: 1300,  B: 11
+     At time: 1300,  SUM: 011
+     At time: 1400,  A: 01
+     At time: 1400,  SUM: 100
+     At time: 1500,  A: 10
+     At time: 1500,  SUM: 101
+     At time: 1600,  A: 11
+     At time: 1600,  SUM: 110
+</pre>
+   <p>
+
+
+   </body></html>
+

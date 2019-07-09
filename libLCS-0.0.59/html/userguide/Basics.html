@@ -1,0 +1,121 @@
+<html lang="en">
+<head>
+<title>Basics - libLCS Userguide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="libLCS Userguide">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Introduction-to-libLCS.html#Introduction-to-libLCS" title="Introduction to libLCS">
+<link rel="next" href="A-Simple-Example.html#A-Simple-Example" title="A Simple Example">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
+Copyright (C) 2006, 2007 Siva Chandra.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Basics"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="A-Simple-Example.html#A-Simple-Example">A Simple Example</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Introduction-to-libLCS.html#Introduction-to-libLCS">Introduction to libLCS</a>
+<hr>
+</div>
+
+<h3 class="section">3.1 Basics</h3>
+
+<p>
+In this section, we will go over some of the basic information and concepts which one needs to know inorder to use 
+libLCS correctly. We will assume that the reader has successfully downloaded, built and installed the static 
+library for libLCS in the way presented in the <a href="Preliminaries.html#Preliminaries">Preliminaries</a> chapter.
+
+
+<h4 class="subsection">3.1.1 The <code>lcs/lcs.h</code> file and the namespace <code>lcs</code></h4>
+
+<p>
+The only file which a user needs to include inorder to use libLCS is the <code>lcs/lcs.h</code> header file. However, this 
+file includes everything that is there in libLCS. Hence, the consequent compilation process can end up being time 
+consuming. To improve on this, one will have to include only those header files which are relevant to his/her 
+application. Refer to the subsquent sections/chapters to learn about the relevant header files for any particular 
+feature of libLCS.
+   <pre class="sp">
+
+</pre>
+Another basic point to note is that all constructs in libLCS are defined under the namespace <code>lcs</code>. Further in 
+this userguide, you will notice that the libLCS constructs are illustrated without using the namespace <code>lcs</code>. It 
+should be understood in such cases that a <code>using namespace lcs;</code> statement is being assumed.
+
+
+<h4 class="subsection">3.1.2 Logic States</h4>
+
+<p>
+Like Verilog, libLCS also supports four-state logic. Logic states are provided as an enumerated type <code>LineState</code>.
+This enumeration is defined is the header file <code>lcs/linestate.h</code>. The following is the description of the four
+enumerated values corresponding to the four logic states.
+
+     <dl>
+
+<dt>`<samp><span class="samp">LOW</span></samp>'<dd>Corresponds to the logic state '0' or <code>false</code>.
+
+<br><dt>`<samp><span class="samp">HIGH</span></samp>'<dd>Corresponds to the logic state '1' or <code>true</code>.
+
+<br><dt>`<samp><span class="samp">UNKNOWN</span></samp>'<dd>Corresponds to the logic state 'x' or an unknown state.
+
+<br><dt>`<samp><span class="samp">HIGH_IMPEDENCE</span></samp>'<dd>Corresponds to the logic state 'z' or a high impedence on the line.
+
+</dl>
+   
+
+<h4 class="subsection">3.1.3 Modules and Busses</h4>
+
+<p>
+All circuit elements, which have an input and an output, will be called as modules when reffered to in the context 
+of libLCS. Since logic gates and flipflops have a well defined input and output, they are also called as modules in 
+libLCS (unlike in Verilog where logic gates are reffered to as primitives). 
+
+Connections between modules are made using constructs called 'busses' ('bus' in singular). They are very similar to the 
+real world abstract concept of a 'bus' as being a carrier of n-bit data for some n. You can now understand as to why the  
+logic states, as described above, are enumerated under an enumerated type with name <code>LineState</code> - they represent 
+the four possible states which the bus lines can take.
+
+
+<h4 class="subsection">3.1.4 Compiling libLCS applications</h4>
+
+<p>
+(This section is relevant only for users of the GNU g++ compiler. Other users should perform corresponding steps
+as per their choice of a C++ compiler.)
+   <pre class="sp">
+
+</pre>
+If you have installed the libLCS static library as described in <a href="Installing-libLCS.html#Installing-libLCS">Installing libLCS</a> section, then you will have to 
+link to the static library during compilation in the usual way. For example, if you have implemented your 
+libLCS application in a file named <code>myapp.cpp</code>, then you will have to build your application binary using the 
+following command.
+
+<pre class="example">     g++ -o myapp myapp.cpp -lLCS
+</pre>
+   <p>
+If you have installed libLCS static library into a different directory, then you should remember to link to the static 
+library by adding the path to the static library file into the list of standard linker paths. This is done in this way:
+
+<pre class="example">     g++ -o myapp myapp.cpp -L"$PATH_TO_LIBLCS_STATIC_LIBRAY" -lLCS
+</pre>
+   <p>
+It is assumed in the above command that the static library for libLCS has been named <code>libLCS.a</code>.
+
+
+   <p>
+
+   </body></html>
+

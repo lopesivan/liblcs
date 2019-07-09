@@ -1,0 +1,83 @@
+<html lang="en">
+<head>
+<title>Downloading libLCS - libLCS Userguide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="libLCS Userguide">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Preliminaries.html#Preliminaries" title="Preliminaries">
+<link rel="prev" href="Licence.html#Licence" title="Licence">
+<link rel="next" href="Installing-libLCS.html#Installing-libLCS" title="Installing libLCS">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
+Copyright (C) 2006, 2007 Siva Chandra.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Downloading-libLCS"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Installing-libLCS.html#Installing-libLCS">Installing libLCS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Licence.html#Licence">Licence</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Preliminaries.html#Preliminaries">Preliminaries</a>
+<hr>
+</div>
+
+<h3 class="section">2.3 Downloading libLCS</h3>
+
+<p>
+One can download the latest version (and other older versions) of libLCS from the download links provided on the 
+sourceforge.net project page:
+<blockquote>
+<a href="http://www.sourceforge.net/projects/liblcs/">http://www.sourceforge.net/projects/liblcs/</a></blockquote>
+   
+The downloadable file for most releases will be a zipped or tarred bundle. The content tree of this bundle is as 
+follows (This example shows a zipped bundle. Tarred bundles have exactly the same tree structure.):
+
+<pre class="verbatim">
+
+libLCS-a.b.x.zip                  - A zip-ed bundle for the release numbered a.b.x
+   |
+   d---- libLCS-a.b.x             - The top level directory
+            |                         
+            f---- lcs             - A directory containing the headers files (*.h) for libLCS.
+            |                         
+            f---- src             - A directory containing the source files (*.cpp) for libLCS.
+            |                         
+            f---- html            - A directory containing the latest libLCS documentation in the HTML format.
+            |                         
+            f---- examples        - A directory containing basic examples of using libLCS.
+            |                         
+            f---- bin             - The directory into which the above examples will be built by make.
+            |                         
+            f---- lib             - The directory into which a static library of libLCS will be built by make.
+            |
+            f---- objs            - A hold for all the object files generated during compilation.
+            |
+            f---- README          - A readme file which can be used as a starting point for exploring libLCS.
+            |
+            f---- License.txt     - The GNU LGPL text file.
+            |
+            f---- Makefile        - A makefile to build a static library and the examples provided.
+
+</pre>
+
+See the <a href="Installing-libLCS.html#Installing-libLCS">Installing libLCS</a> section for instructions on building and installing a static library for libLCS.
+
+<!-- ##################      Section      ##################### -->
+
+
+   </body></html>
+

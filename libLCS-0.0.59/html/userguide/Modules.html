@@ -1,0 +1,75 @@
+<html lang="en">
+<head>
+<title>Modules - libLCS Userguide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="libLCS Userguide">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="prev" href="Introduction-to-libLCS.html#Introduction-to-libLCS" title="Introduction to libLCS">
+<link rel="next" href="Continuous-Assignments.html#Continuous-Assignments" title="Continuous Assignments">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
+Copyright (C) 2006, 2007 Siva Chandra.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Modules"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Continuous-Assignments.html#Continuous-Assignments">Continuous Assignments</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Introduction-to-libLCS.html#Introduction-to-libLCS">Introduction to libLCS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
+<hr>
+</div>
+
+<h2 class="chapter">4 Modules</h2>
+
+<p>
+In the Verilog hardware description language, modules are omni present and atleast one module has to be defined to 
+perform even the simplest of simulations.  In contrast, libLCS does not require that a user has to define a module 
+to perform a simulation. As presented in the chapter <a href="Introduction-to-libLCS.html#Introduction-to-libLCS">Introduction to libLCS</a>, one can use the off-the-shelf 
+logic gates to build his/her system and perform a simulation. However, such an approach is suitable only for building 
+small and simple systems. As the system grows in size and complexity, building it using the off-the-shelf logic gates, 
+flip-flops and other utility modules gets very laborious and error prone. One should follow a <i>top-down</i> design 
+approach and build modules which consist of other simpler sub modules. Moreover, as the system gets complex, 
+simulating/testing the under lying algorithm becomes more important than the actual gate-level circuit. For this, 
+one would need to build modules which are functional equivalents of the actual gate-level circuit. Such an abstraction 
+of a system is called as behavioral modelling. 
+   <pre class="sp">
+
+</pre>
+libLCS facilitates a user to build his/her own modules. These user defined modules can consist of other modules 
+and/or behavioral models. In this chapter three example module descriptions are used to explains the techniques, 
+steps and libLCS constructs which one should use in order to build their own modules. The material presented will 
+be best understood if the sections presenting these example modules are read in the following order.
+
+
+</li></ul>
+<p>
+<ul class="menu">
+<li><a accesskey="1" href="Example-Module-1.html#Example-Module-1">Example Module 1</a>:  A 1-bit fulladder module consisting of other logic gate modules. This serves as an example of 
+a module which is a simple grouping of other smaller modules.
+<li><a accesskey="2" href="Example-Module-2.html#Example-Module-2">Example Module 2</a>:  A 1-bit fulladder module built using a behavioral model. This serves as an example of a module
+built using purely behavioral constructs.
+<li><a accesskey="3" href="Example-Module-3.html#Example-Module-3">Example Module 3</a>:  A 2-bit fulladder module using partial behavioral modelling. This serves as an example of a 
+module which consists of other smaller modules, as well as behavioral constructs.
+
+</ul>
+
+
+   <p>
+
+   </body></html>
+
