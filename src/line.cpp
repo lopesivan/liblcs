@@ -2,259 +2,68 @@
 // This file is distributed as part of the libLCS library.
 // libLCS is C++ Logic Circuit Simulation library.
 //
-// Copyright (c) 2006-2007, B. R. Siva Chandra
+// Copyright (c) 2006-2007, B. R. Siva Chandra, India
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // In case you would like to contact the author, use the following e-mail
 // address: sivachandra_br@yahoo.com
 //////////////////////////////////////////////////////////////////////////////////
 
-#include <lcs/bus.h>
-#include <lcs/systime.h>
+#include <bus.h>
 
 using namespace lcs;
 using namespace std;
 
-Line::Line(void)
-{
-    val = new LineState; *val = UNKNOWN;
-    refCount = new int;
-    *refCount = 1;
-
-    delay_ = new unsigned int;
-    *delay_ = 0;
-
-    purgedVal = new LineState; *purgedVal = UNKNOWN;
-    purgeTime = new unsigned int; *purgeTime = 0;
-    purgedChangeTime = new unsigned int; *purgedChangeTime = 0;
-}
-
-Line::Line(const Line& line)
-    : val(line.val), purgedVal(line.purgedVal),
-      refCount(line.refCount), delay_(line.delay_),
-      purgeTime(line.purgeTime), purgedChangeTime(line.purgedChangeTime),
-      changeModList(line.changeModList),
-      posEdgeList(line.posEdgeList), negEdgeList(line.negEdgeList),
-      changeModIdList(line.changeModIdList), posEdgeIdList(line.posEdgeIdList),
-      negEdgeIdList(line.negEdgeIdList),
-      nextChangeTimeQueue(line.nextChangeTimeQueue),
-      zeroDelayChangeTimeQueue(line.zeroDelayChangeTimeQueue),
-      valueQueue(line.valueQueue), zeroDelayValueQueue(line.zeroDelayValueQueue)
-{
-    (*refCount)++;
-}
-
-Line::~Line()
-{
-    if (*refCount <= 1)
-    {
-        delete val; delete refCount; delete delay_;
-        delete purgedVal; delete purgeTime; delete purgedChangeTime;
-    }
-    else
-        (*refCount)--;
-}
-
-void Line::notify(const LineEvent &event, Module *mod, const int &portId)
+void Line::drive(Module *mod)
 {
     if (mod != NULL)
     {
-        if (event == LINE_STATE_CHANGE)
-        {
-            if (!changeModList.isPresent(mod))
-            {
-                changeModList.append(mod);
-                changeModIdList.append(portId);
-            }
-        }
-        else if (event == LINE_POS_EDGE)
-        {
-            posEdgeList.append(mod);
-            posEdgeIdList.append(portId);
-        }
-        else if (event == LINE_NEG_EDGE)
-        {
-            negEdgeList.append(mod);
-            negEdgeIdList.append(portId);
-        }
+        modList.append(mod);
     }
 }
 
-void Line::stopNotification(const LineEvent& event, Module *mod, const int &portId)
+void Line::unDrive(Module *mod)
 {
-    if (mod != NULL)
-    {
-        if (event == LINE_STATE_CHANGE)
-        {
-            changeModList.remove(mod);
-            changeModIdList.remove(portId);
-        }
-        else if (event == LINE_POS_EDGE)
-        {
-            posEdgeList.remove(mod);
-            posEdgeIdList.remove(portId);
-        }
-        else if (event == LINE_NEG_EDGE)
-        {
-            negEdgeList.remove(mod);
-            negEdgeIdList.remove(portId);
-        }
-    }
+    modList.remove(mod);
 }
 
-void Line::hiddenUpdate(void)
+Bus<1> Line::makeBus(void)
 {
-    if (zeroDelayChangeTimeQueue.getSize() == 0)
-    {
-        return;
-    }
+    Bus<1> bus;
+    bus[0] = *this;
 
-    unsigned int time = SystemTimer::getHiddenTime(),
-                 ct = zeroDelayChangeTimeQueue.getFirstInQueue();
-
-    if (time >= ct)
-    {
-        zeroDelayChangeTimeQueue.deQueue();
-
-        LineState value = zeroDelayValueQueue.getFirstInQueue();
-        zeroDelayValueQueue.deQueue();
-
-        setLineValue(value);
-    }
+    return bus;
 }
 
-void Line::update(void)
+const Line& Line::operator=(const LineState& value)
 {
-    if (nextChangeTimeQueue.getSize() == 0)
+    if (*val != value)
     {
-        SystemTimer::stopLineNotification(this);
-        return;
+        *val = value;
+
+        ListIterator<Module*> iter = modList.getListIterator();
+        iter.reset();
+        while (iter.hasNext())
+        {
+            Module *mod = iter.next();
+            mod->propogate();
+        }
     }
 
-    unsigned int time = SystemTimer::getTime(), ct = nextChangeTimeQueue.getFirstInQueue();
-    if (time >= ct)
-    {
-        SystemTimer::stopLineNotification(this);
-        nextChangeTimeQueue.deQueue();
-
-        LineState value = valueQueue.getFirstInQueue();
-        valueQueue.deQueue();
-
-        setLineValue(value);
-    }
-}
-
-void Line::operator=(const LineState& value)
-{
-    if (*delay_ != 0)
-    {
-        int qsize = nextChangeTimeQueue.getSize();
-        unsigned int crtime = SystemTimer::getTime();
-
-        if (qsize == 0)
-        {
-            if (*purgedChangeTime != 0 && *purgeTime == crtime)
-            {
-                if (*purgedVal == value)
-                {
-                    SystemTimer::notifyLine(this);
-                    nextChangeTimeQueue.enQueue(*purgedChangeTime);
-                    valueQueue.enQueue(value);
-                }
-
-                return;
-            }
-            // Dont schedule a line state change is the same value is requested.
-            if (*val == value)
-                return;
-
-            SystemTimer::notifyLine(this);
-            nextChangeTimeQueue.enQueue(SystemTimer::getTime() + *delay_);
-            valueQueue.enQueue(value);
-        }
-        else
-        {
-            LineState nextVal = valueQueue.getFirstInQueue();
-            // Do nothing if the value requested to be set is the same as the
-            // value to be set next.
-            if (nextVal == value)
-                return;
-
-            unsigned int nxtime = nextChangeTimeQueue.getFirstInQueue();
-
-            if (crtime <= nxtime && ((crtime + *delay_) > nxtime))
-            {
-                valueQueue.deQueue();
-                nextChangeTimeQueue.deQueue();
-                SystemTimer::stopLineNotification(this);
-
-                *purgedVal = nextVal;
-                *purgedChangeTime = nxtime;
-                *purgeTime = crtime;
-            }
-            else if ((crtime + *delay_) == nxtime)
-            {
-                valueQueue.deQueue();
-                valueQueue.enQueue(value);
-            }
-            else
-            {
-                SystemTimer::notifyLine(this);
-                nextChangeTimeQueue.enQueue(SystemTimer::getTime() + *delay_);
-                valueQueue.enQueue(value);
-            }
-        }
-
-        return;
-    }
-    else
-    {
-        if (zeroDelayValueQueue.getSize() == 0)
-        {
-            if (value == *val)
-                return;
-            else
-            {
-                SystemTimer::notifyHiddenTick(this);
-                zeroDelayChangeTimeQueue.enQueue(SystemTimer::getHiddenTime() + 1);
-                zeroDelayValueQueue.enQueue(value);
-            }
-        }
-        else if (zeroDelayValueQueue.getSize() == 1)
-        {
-            LineState qval = zeroDelayValueQueue.getFirstInQueue();
-            if (qval == value)
-                return;
-            else if (*val == value)
-            {
-                zeroDelayChangeTimeQueue.deQueue();
-                zeroDelayValueQueue.deQueue();
-            }
-            else
-            {
-                zeroDelayChangeTimeQueue.deQueue();
-                zeroDelayValueQueue.deQueue();
-
-                zeroDelayChangeTimeQueue.enQueue(SystemTimer::getHiddenTime() + 1);
-                zeroDelayValueQueue.enQueue(value);
-            }
-        }
-
-        return;
-    }
+    return *this;
 }
 
 const Line& Line::operator=(const Line &line)
@@ -264,94 +73,23 @@ const Line& Line::operator=(const Line &line)
         (*refCount)--;
 
         val = line.val;
-        purgedVal = line.purgedVal;
-        delay_ = line.delay_;
-        purgeTime = line.purgeTime;
-        purgedChangeTime = line.purgedChangeTime;
-        changeModList = line.changeModList;
-        posEdgeList = line.posEdgeList;
-        negEdgeList = line.negEdgeList;
-        changeModIdList = line.changeModIdList;
-        posEdgeIdList = line.posEdgeIdList;
-        negEdgeIdList = line.negEdgeIdList;
+        modList = line.modList;
         refCount = line.refCount;
-        valueQueue = line.valueQueue;
-        nextChangeTimeQueue = line.nextChangeTimeQueue;
-        zeroDelayValueQueue = line.zeroDelayValueQueue;
-        zeroDelayChangeTimeQueue = line.zeroDelayChangeTimeQueue;
 
         (*refCount)++;
     }
     else
     {
-        delete refCount; delete val; delete delay_;
-        delete purgedVal; delete purgeTime; delete purgedChangeTime;
+        delete refCount; delete val;
 
         val = line.val;
-        purgedVal = line.purgedVal;
-        delay_ = line.delay_;
-        purgeTime = line.purgeTime;
-        purgedChangeTime = line.purgedChangeTime;
-        changeModList = line.changeModList;
-        posEdgeList = line.posEdgeList;
-        negEdgeList = line.negEdgeList;
-        changeModIdList = line.changeModIdList;
-        posEdgeIdList = line.posEdgeIdList;
-        negEdgeIdList = line.negEdgeIdList;
+        modList = line.modList;
         refCount = line.refCount;
-        valueQueue = line.valueQueue;
-        nextChangeTimeQueue = line.nextChangeTimeQueue;
-        zeroDelayValueQueue = line.zeroDelayValueQueue;
-        zeroDelayChangeTimeQueue = line.zeroDelayChangeTimeQueue;
 
         (*refCount)++;
     }
 
     return *this;
-}
-
-void Line::setLineValue(const LineState &value)
-{
-    bool posEdge = false;
-    if (value == HIGH && (*val == LOW || *val == UNKNOWN))
-        posEdge = true;
-
-    *val = value;
-
-    ListIterator<Module*> changeIter = changeModList.getListIterator();
-    ListIterator< int > changeIdIter = changeModIdList.getListIterator();
-
-    changeIter.reset(); changeIdIter.reset();
-    while (changeIter.hasNext())
-    {
-        Module *mod = changeIter.next();
-        mod->onStateChange(changeIdIter.next());
-    }
-
-    if (posEdge)
-    {
-        ListIterator<Module*> posEdgeIter = posEdgeList.getListIterator();
-        ListIterator< int > posEdgeIdIter = posEdgeIdList.getListIterator();
-
-        posEdgeIter.reset(); posEdgeIdIter.reset();
-        while (posEdgeIter.hasNext())
-        {
-            Module *mod = posEdgeIter.next();
-            mod->onPosEdge(posEdgeIdIter.next());
-        }
-    }
-    else
-    {
-        ListIterator<Module*> negEdgeIter = negEdgeList.getListIterator();
-        ListIterator< int > negEdgeIdIter = negEdgeIdList.getListIterator();
-
-        negEdgeIter.reset(); negEdgeIdIter.reset();
-        while (negEdgeIter.hasNext())
-        {
-            Module *mod = negEdgeIter.next();
-            mod->onNegEdge(negEdgeIdIter.next());
-        }
-    }
 }
 
 ostream& operator<<(const std::ostream &osObj, const lcs::Line &line)
