@@ -1,44 +1,60 @@
 <html lang="en">
 <head>
-<title>libLCS Userguide</title>
+<title>System Time and Sequential Circuit Elements - libLCS Userguide</title>
 <meta http-equiv="Content-Type" content="text/html">
 <meta name="description" content="libLCS Userguide">
-<meta name="generator" content="makeinfo 4.3">
-<link href="http://www.gnu.org/software/texinfo/" rel="generator-home">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Introduction-to-libLCS.html#Introduction-to-libLCS" title="Introduction to libLCS">
+<link rel="prev" href="Logic-Gates.html#Logic-Gates" title="Logic Gates">
+<link rel="next" href="Utility-Modules.html#Utility-Modules" title="Utility Modules">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
-Copyright (C) 2006, 2007 Siva Chandra.-->
+Copyright (C) 2006, 2007 Siva Chandra.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
 </head>
 <body>
 <div class="node">
 <p>
-Node:<a name="System%20Time%20and%20Sequential%20Circuit%20Elements">System Time and Sequential Circuit Elements</a>,
-Next:<a rel="next" accesskey="n" href="Utility-Modules.html#Utility%20Modules">Utility Modules</a>,
-Previous:<a rel="previous" accesskey="p" href="Logic-Gates.html#Logic%20Gates">Logic Gates</a>,
-Up:<a rel="up" accesskey="u" href="Introduction-to-libLCS.html#Introduction%20to%20libLCS">Introduction to libLCS</a>
-<hr><br>
+<a name="System-Time-and-Sequential-Circuit-Elements"></a>
+Next:&nbsp;<a rel="next" accesskey="n" href="Utility-Modules.html#Utility-Modules">Utility Modules</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Logic-Gates.html#Logic-Gates">Logic Gates</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Introduction-to-libLCS.html#Introduction-to-libLCS">Introduction to libLCS</a>
+<hr>
 </div>
 
-<h3 class="section">System Time and Sequential Circuit Elements</h3>
+<h3 class="section">3.4 System Time and Sequential Circuit Elements</h3>
 
-   <p>
+<p>
 In this section, we will present the concept of <em>system time</em>, the class <code>Clock</code>, the off-the-shelf 
 flipflop modules, and the module <code>FrequencyDivider</code>.
 
 
-<h4 class="subsection">System Time</h4>
+<h4 class="subsection">3.4.1 System Time</h4>
 
-   <p>
+<p>
 The libLCS simulation system has a system timer. This timer is turned on automatically whenever a libLCS simulation is 
-started. The timer starts ticking up from time zero until the stop-time. As presented in the section <a href="A-Simple-Example.html#A%20Simple%20Example">A Simple Example</a>,
+started. The timer starts ticking up from time zero until the stop-time. As presented in the section <a href="A-Simple-Example.html#A-Simple-Example">A Simple Example</a>,
 a libLCS simulation starts with a call to the static member function <code>Simulation::start()</code>. A simulation lasts for 
 the duration for which the system timer was set to run for. The stop time has to be set by a call to the static 
 member function <code>Simulation::setStopTime(unsigned int)</code>. 
 
 
-<h4 class="subsection">The class <code>Clock</code></h4>
+<h4 class="subsection">3.4.2 The class <code>Clock</code></h4>
 
-   <p>
+<p>
 Apart from a system timer, the libLCS simulation system also has a clock provided through the singleton class 
 <code>Clock</code>. It is defined in the header file <code>lcs/clock.h</code>. It is essestially a pulse generator with equal high 
 and low periods. It should be obtained through the static function <code>Clock::getClock()</code>. By default, the pulse width 
@@ -47,9 +63,9 @@ choice by using the static member function <code>Clock::setPulseWidth(unsigned i
 the use of a clock, is presented in a later subsection below. 
 
 
-<h4 class="subsection">Flipflops</h4>
+<h4 class="subsection">3.4.3 Flipflops</h4>
 
-   <p>
+<p>
 There exist of-the-shelf modules for D and JK flipflops in libLCS. They are provided as template classes requiring two 
 template parameters. The first template parameter determines if the flipflop is positive edge triggered or negetive 
 edge triggered. The second template parameter determines the input to output propogation delay of the flipflop. The 
@@ -60,13 +76,13 @@ following are the template class declarations for the flipflop modules.
 <li>The D-flipflop template class declaration:
      <pre class="example">          template&lt;PulseEdge type = POS_EDGE, unsigned int delay = 0&gt;
           class DFlipFlop;
-          </pre>
-     
+     </pre>
+     <p>
 <li>The JK-flipflop template class declaration:
      <pre class="example">          template&lt;PulseEdge type = POS_EDGE, unsigned int delay = 0&gt;
           class JKFlipFlop;
-          </pre>
-     
+     </pre>
+     <p>
         </ol>
 
 The trigger type of the flipflops is specified by an enumerated data type <code>PulseEdge</code>. The first template parameter 
@@ -75,9 +91,9 @@ edge triggered flipflop. The other value it can take is <code>NEG_EDGE</code> wh
 flipflop.
 
 
-<h5 class="subsubsection">Flipflop header files</h5>
+<h5 class="subsubsection">3.4.3.1 Flipflop header files</h5>
 
-   <p>
+<p>
 The following is the list of all flipflop modules and the corresponding header files in which the flipflop module classes 
 are defined.
 
@@ -85,25 +101,25 @@ are defined.
 
 <li>D-flipflop
      <pre class="example">          lcs/dflipflop.h
-          </pre>
-     
+     </pre>
+     <p>
 <li>JK-flipflop
      <pre class="example">          lcs/jkflipflop.h
-          </pre>
-     
+     </pre>
+     <p>
         </ol>
 
 
-<h4 class="subsection">An Example</h4>
+<h4 class="subsection">3.4.4 An Example</h4>
 
-   <p>
+<p>
 In this subsection, we will present an example which illustrates the use of the system timer, the system clock and 
 the D-flipflop modules. The aim of the example is to construct and simulate a 4-bit counter using D-flipflops. The 
 circuit diagram is as below. The bit sequence D3D2D1D0 in that order is the output of our counter circuit.
 
 <blockquote>
 <div align="center"><img src="four_bit_counter.jpg" alt="four_bit_counter.jpg"></div>
-</blockquote>
+   </blockquote>
    
 The following is the full listing of the program which constructs and simulates the circuit shown in the above figure.
 There exists a general rule with all flipflop module class constructors. The outputs of the modules will be the passed 
@@ -112,8 +128,7 @@ to the flipflop constructor is the Q output. The next arguments are the D input,
 input in that order. (In case of a JK-flipflop, the order of arguments to the constructor is as follows: the Q output, 
 J input, K input, clock input, the active-high reset input. All arguments are single-line bus objects.)
 
-<pre class="example">
-     <pre class="verbatim">
+<pre class="example"><pre class="verbatim">     
      #include &lt;lcs/lcs.h>
      
      using namespace lcs;
@@ -152,9 +167,9 @@ J input, K input, clock input, the active-high reset input. All arguments are si
      
          return 0;
      }
-     </pre>
-     </pre>
-   
+</pre>
+</pre>
+   <p>
 When the above program is compiled and executed, the following output is obtained on the standard output.
 
 <pre class="verbatim">
@@ -187,26 +202,25 @@ simulation is generated. The following is the screenshot of the GTKWave plot of 
 
 <blockquote>
 <div align="center"><img src="4_bit_counter_using_dff.jpg" alt="4_bit_counter_using_dff.jpg"></div>
-</blockquote>
+   </blockquote>
    
 
-<h4 class="subsection">The class <code>FrequencyDivider</code></h4>
+<h4 class="subsection">3.4.5 The class <code>FrequencyDivider</code></h4>
 
-   <p>
+<p>
 libLCS provides a module which divides the frequency of the input signal by a specified factor. This module, defined in 
 the file <code>lcs/freqdiv.h</code>, is provided as a template class with the following declaration. 
 
 <pre class="example">     template&lt;unsigned int factor, unsigned int delay = 0&gt;
      class FrequencyDivider;
-     </pre>
-   
+</pre>
+   <p>
 The first template parameter <code>factor</code> specifies the factor by which the input frequency is divided. The second 
 template parameter <code>delay</code>, which takes a default value of 0, specifies the input to output propogation delay. The 
 example below illustrates the usage of a frequency divider module. It uses the system clock as an input to the frequency 
 divider which divides the clock frequency by 7. A zero delay module is used.
 
-<pre class="example">
-     <pre class="verbatim">
+<pre class="example"><pre class="verbatim">     
      #include &lt;lcs/lcs.h>
      
      using namespace lcs;
@@ -235,9 +249,9 @@ divider which divides the clock frequency by 7. A zero delay module is used.
      
          return 0;
      }
-     </pre>
-     </pre>
-   
+</pre>
+</pre>
+   <p>
 When the above program is compiled and executed, the following output is obtained.
 
 <pre class="verbatim">
