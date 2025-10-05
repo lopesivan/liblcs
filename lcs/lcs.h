@@ -34,6 +34,7 @@
 #include "bus.h"
 #include "changeMonitor.h"
 #include "clock.h"
+#include "counter.h"
 #include "dflipflop.h"
 #include "fa.h"
 #include "fanout.h"
@@ -54,3 +55,4 @@
 /// This is the namespace under which all the constructs of libLCS are defined.
 ///
 namespace lcs {}
+
