@@ -2,21 +2,21 @@
 // This file is distributed as part of the libLCS library.
 // libLCS is C++ Logic Circuit Simulation library.
 //
-// Copyright (c) 2006-2007, B. R. Siva Chandra
+// Copyright (c) 2006-2007, B. R. Siva Chandra, India
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // In case you would like to contact the author, use the following e-mail
 // address: sivachandra_br@yahoo.com
@@ -25,40 +25,28 @@
 #ifndef __LCS_INPUT_BUS_H__
 #define __LCS_INPUT_BUS_H__
 
-#include "expression.h"
-#include "array1d.h"
 #include "dataptr.h"
 #include "module.h"
 #include "line.h"
 #include "list.h"
-#include "outofrange_exception.h"
-#include <fstream>
 
 namespace lcs
 { // Start of namespace lcs
 
 /// A class encapsulating a set of data lines to be used as an input to
 /// a \p lcs::Module object. A client can only read the data lines and cannot set/modify
-/// them. Use the class \p lcs::Bus in order to obtain encapsulated lines whose levels can
-/// be set.
+/// them. Use the class \p lcs::Bus in order to obtain lines whose levels can be set by a
+/// client.
 ///
 /// \param bits The number of data lines in the bus.
 template <int bits = 1>
-class InputBus : protected Array1D<Line, bits>
+class InputBus
 {
 
-template <int w, ExprType Type, typename LExprType, typename RExprType>
-friend class Expression;
-
-/// InputBus classes of different sizes are friends of each other.
+/// InputBus classes of other sizes are friends of this class.
 ///
 template <int w>
 friend class InputBus;
-
-/// InputBus classes of different sizes are friends of each other.
-///
-template <int w>
-friend class Bus;
 
 public:
 
@@ -80,253 +68,147 @@ public:
 
     /// Returns the bus width.
     /// Bus width is the same as the number of data lines in the bus.
-    int width(void) const { return bits; }
+    int width(void) { return *size; }
 
-    /// Registers the module which has to be notified about an occurance of a line event.
-    /// A module can request notification at the occurance of one of the three different
-    /// kinds of line events. These line events are enumerated as \p lcs::LineEvent members.
+    /// Registers the module which has to be driven.
     /// Every module which intends to be driven by an \p InputBus will have to register
-    /// itself using this function. Also, the module should be an object of a class which
-    /// is a derivate of the \p lcs::Module class.
+    /// itself using this function.
     ///
-    /// This function typically needs to be used only by module implementers in the
-    /// constructors of their \p lcs::Module derivatives. Other users will never need to
-    /// use this function.
-    ///
-    /// \param mod Pointer to the \p lcs::Module object which has to be notified about a line
-    /// event.
-    ///
-    /// \param event The event type whose occurance the module will be notified of. For
-    /// example, if lcs::LINE_POS_EDGE is used, then the module will notified at the
-    /// occurance of a positive edge on the line.
-    ///
-    /// \param portId The id of the module port to which the bus is connected. The bus will
-    /// use this id while notifying the module.
-    ///
-    /// \param line The index of the bus line whose line events the module seeks to be
-    /// notified of. The default value is -1. In general, a negetive value indicates that
-    /// the module should be notified of the event occuring on all lines of the bus.
-    ///
-    void notify(Module *mod, const LineEvent &event, const int &portId,
-                const int &line = -1) throw(OutOfRangeException<int>);
+    /// \param mod A pointer to the lcs::Module object which has to be driven.
+    void drive(Module *mod);
 
-    /// De-registers a module from the list of modules which have to be notified.
-    /// See \p InputBus::notify for more details.
-    ///
-    /// This function typically needs to be used only by module implementers in the
-    /// destructors of their \p lcs::Module derivatives. Other users will never need to
-    /// use this function.
-    ///
-    /// \param mod Pointer to the \p lcs::Module object which has to be de-registered.
-    ///
-    /// \param event The event type whose occurance the module was be notified.
-    ///
-    /// \param portId The id of the module port to which the bus is connected.
-    ///
-    /// \param line The index of the bus line whose line events the module sought to be
-    /// notified of. The default value is -1. In general, a negetive value indicates that
-    /// the module should de-registered from being notified by all lines of the bus.
-    ///
-    void stopNotification(Module *mod, const LineEvent &event, const int &portId,
-                          const int &line = -1) throw(OutOfRangeException<int>);
+    /// De-registers a module from the list of modules which have to be driven.
+    /// See InputBus::drive for more details.
+    void unDrive(Module *mod);
 
-    /// Converts the binary bit value in the bus lines to a decimal integer.
-    ///
-    unsigned long toInt() const;
-
-    /// Converts the binary bit value in the bus lines to a string representation.
-    ///
-    std::string toStr(void) const;
-
-    /// Overloaded operator which returns a suitable expression object corresponding
-    /// to the line at index \p i. This is done so that bit-selects can be used in expressions of
-    /// bitwise operations. An \p OutOfRangeException is thrown if the index value \p i is beyond
-    /// the bus width.
-    inline const Expression<1, LINE_EXPR, void, void> operator[](int i) const
-                                            throw(OutOfRangeException<int>);
+    /// Overloaded operator which returns a const lcs::LineState variable corresponding
+    /// to the state if the line at index \p i. The returned value is only a copy of the
+    /// line state.
+    const LineState operator[](int i) const;
 
     /// The overloaded operator to join data lines from two busses and form a new bus
-    /// from these. The right operand bus takes the MSB locations of the new \p InputBus
+    /// from these. The right operand bus takes the MSB locations of the new InputBus
     /// object.
     ///
     /// \param bits The width of the left-operand bus
     /// \param w The width of the right operand bus
-    /// \param bus The right operand \p Bus object.
+    /// \param bus The right operand Bus object.
     ///
     template <int w>
-    const InputBus<w+bits> operator,(const InputBus<w> &bus) const;
+    const InputBus<w+bits> operator*(const InputBus<w> &bus) const;
 
     /// The overloaded operator to join a data line to a bus to form a new bus. The line
     /// to be joined will have to be the right operand. The joined line takes the MSB
-    /// location in the resulting \p InputBus object.
+    /// location in the resulting InputBus object.
     ///
-    /// \param line The right operand \p lcs::Line object.
+    /// \param line The right operand lcs::Line object.
     ///
-    const InputBus<bits+1> operator,(const Line &line) const;
+    const InputBus<bits+1> operator*(const Line &line) const;
 
-    /// Returns a part-bus formed from a set of consecutive lines of the original
-    /// \p lcs::InputBus object. If \p s+w goes beyond the range of the original bus
-    /// width, then, only the lines within range are assigned to the lines of the new bus object.
-    ///
-    /// \param w The width of the part-bus.
-    /// \param s The start bit from where the part-bus should be accumulated.
-    template <int w>
-    const InputBus<w> partSelect(int s) const;
+protected:
 
+    /// A pointer to the array of \p lcs::Line objects encapsulated in an \p InputBus.
+    ///
+    DataPtr<Line> *dataPtr;
+
+private:
+    int *size;
+    int *refCount;
 };
 
 template <int bits>
-InputBus<bits>::InputBus(void) : Array1D<Line, bits>()
+InputBus<bits>::InputBus(void)
 {
-    Line *data = Array1D<Line, bits>::dataPtr->data;
-    for (int i = 0; i < bits; i++)
-        data[i].setLineValue(UNKNOWN);
-}
+    dataPtr = new DataPtr<Line>();
+    size = new int;
 
-template <int bits>
-InputBus<bits>::InputBus(const InputBus<bits> &bus) : Array1D<Line, bits>(bus) { }
+    refCount = new int;
+    *refCount = 1;
 
-template <int bits>
-InputBus<bits>::~InputBus() { }
-
-template <int bits>
-void InputBus<bits>::notify(Module *mod, const LineEvent &event, const int &portId,
-                            const int &line) throw(OutOfRangeException<int>)
-{
-    if (line >= bits)
+    if (bits <= 0)
     {
-        OutOfRangeException<int> ex(0, bits-1, line);
-        throw ex;
-    }
+        dataPtr->data = new Line;
+        Line *data = dataPtr->data;
 
-    Line *data = Array1D<Line, bits>::dataPtr->data;
-
-    if (line < 0)
-    {
-        for (int i = 0; i < bits; i++)
-        {
-            Line dataline = data[i];
-            dataline.notify(event, mod, portId);
-        }
+        data[0] = UNKNOWN;
+        *size = 1;
     }
     else
     {
-        Line dataline = data[line];
-        dataline.notify(event, mod, portId);
+        dataPtr->data = new Line [bits];
+        *size = bits;
+
+        Line *data = dataPtr->data;
+        for (int i = 0; i < bits; i++)
+            data[i] = UNKNOWN;
     }
 }
 
 template <int bits>
-void InputBus<bits>::stopNotification(Module *mod, const LineEvent &event, const int &portId,
-                                      const int &line) throw(OutOfRangeException<int>)
+InputBus<bits>::InputBus(const InputBus<bits> &bus)
+   : dataPtr(bus.dataPtr), size(bus.size), refCount(bus.refCount)
 {
-    if (line >= bits)
-    {
-        OutOfRangeException<int> ex(0, bits-1, line);
-        throw ex;
-    }
+    (*refCount)++;
+}
 
-    Line *data = Array1D<Line, bits>::dataPtr->data;
-
-    if (line < 0)
+template <int bits>
+InputBus<bits>::~InputBus()
+{
+    if (*refCount > 1)
     {
-        for (int i = 0; i < bits; i++)
-        {
-            Line dataline = data[i];
-            dataline.stopNotification(event, mod, portId);
-        }
+        (*refCount)--;
+
+        refCount = NULL;
+        dataPtr = NULL;
+        size = NULL;
     }
     else
     {
-        Line dataline = data[line];
-        dataline.stopNotification(event, mod, portId);
+        delete [] dataPtr->data;
+        delete dataPtr;
+        delete refCount;
+        delete size;
     }
+}
+
+template <int bits>
+void InputBus<bits>::drive(Module *mod)
+{
+    Line *data = dataPtr->data;
+    for (int i = 0; i < *size; i++)
+    {
+        Line line = data[i];
+        line.modList.append(mod);
+    }
+}
+
+template <int bits>
+void InputBus<bits>::unDrive(Module *mod)
+{
+    Line *data = dataPtr->data;
+    for (int i = 0; i < *size; i++)
+    {
+        Line line = data[i];
+        line.modList.remove(mod);
+    }
+}
+
+template <int bits>
+const LineState InputBus<bits>::operator[](int index) const
+{
+    Line *data, l;
+    data = dataPtr->data;
+    l = data[index];
+
+    return l();
 }
 
 template <int bits>
 template <int w>
-const InputBus<w> InputBus<bits>::partSelect(int s) const
-{
-    InputBus<w> b;
-
-    Line *bdata = b.dataPtr->data, *data = Array1D<Line, bits>::dataPtr->data;
-    for (int i = 0; i < w; i++)
-    {
-        if (i+s < bits)
-            bdata[i] = data[i+s];
-        else
-            break;
-    }
-
-    return b;
-}
-
-template <int bits>
-unsigned long InputBus<bits>::toInt(void) const
-{
-    unsigned long val = 0;
-    Line *data = Array1D<Line, bits>::dataPtr->data;
-
-    for (int i = 0; i < bits; i++)
-    {
-        unsigned long bitVal = 0;
-        if (data[i].operator()() == HIGH)
-            bitVal = 1;
-        else if (data[i].operator()() == UNKNOWN || data[i].operator()() == HIGH_IMPEDENCE)
-        {
-            val = 0;
-            break;
-        }
-
-        bitVal <<= i;
-        val += bitVal;
-    }
-
-    return val;
-}
-
-template <int bits>
-std::string InputBus<bits>::toStr(void) const
-{
-    Line *data = Array1D<Line, bits>::dataPtr->data;
-    std::stringstream ss;
-
-    for (int i = 0; i < bits; i++)
-    {
-        LineState state = data[i].operator()();
-        char bitVal = '0';
-
-        if (state == HIGH)
-            bitVal = '1';
-        else if (state == HIGH_IMPEDENCE)
-            bitVal = 'z';
-        else if (state == UNKNOWN)
-            bitVal = 'x';
-
-        ss << bitVal;
-    }
-
-    return ss.str();
-}
-
-template <int bits>
-const Expression<1, LINE_EXPR, void, void> InputBus<bits>::operator[](int index) const
-                                                            throw(OutOfRangeException<int>)
-{
-    if (index < 0 || index >= bits)
-        throw OutOfRangeException<int>(0, bits-1, index);
-
-    Line *line = Array1D<Line, bits>::dataPtr->data;
-    line += index;
-    return Expression<1, LINE_EXPR, void, void>(line);
-}
-
-template <int bits>
-template <int w>
-const InputBus<w+bits> InputBus<bits>::operator,(const InputBus<w> &bus) const
+const InputBus<w+bits> InputBus<bits>::operator*(const InputBus<w> &bus) const
 {
     InputBus<w+bits> b;
-    Line *data = Array1D<Line, bits>::dataPtr->data, *bdata = b.dataPtr->data;
+    Line *data = dataPtr->data, *bdata = b.dataPtr->data;
     for (int i = 0; i < bits; i++)
         bdata[i] = data[i];
 
@@ -338,10 +220,10 @@ const InputBus<w+bits> InputBus<bits>::operator,(const InputBus<w> &bus) const
 }
 
 template <int bits>
-const InputBus<bits+1> InputBus<bits>::operator,(const Line &line) const
+const InputBus<bits+1> InputBus<bits>::operator*(const Line &line) const
 {
     Bus<1+bits> b;
-    Line *data = Array1D<Line, bits>::dataPtr->data, *bdata = b.dataPtr->data;
+    Line *data = dataPtr->data, *bdata = b.dataPtr->data;
     for (int i = 0; i < bits; i++)
         bdata[i] = data[i];
 
