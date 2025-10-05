@@ -63,7 +63,8 @@
 <area href="classlcs_1_1_not.html" alt="lcs::Not< delay >" shape="rect" coords="386,672,762,696">
 <area href="classlcs_1_1_or.html" alt="lcs::Or< width, delay >" shape="rect" coords="386,728,762,752">
 <area href="classlcs_1_1_register.html" alt="lcs::Register< bits, edgeType, delay >" shape="rect" coords="386,784,762,808">
-<area href="classlcs_1_1_xor.html" alt="lcs::Xor< width, delay >" shape="rect" coords="386,840,762,864">
+<area href="classlcs_1_1_shift_reg.html" alt="lcs::ShiftReg< bits, edgeType, shift, delay >" shape="rect" coords="386,840,762,864">
+<area href="classlcs_1_1_xor.html" alt="lcs::Xor< width, delay >" shape="rect" coords="386,896,762,920">
 </map>
 <a href="classlcs_1_1_module-members.html">List of all members.</a><hr><a name="_details"></a><h2>Detailed Description</h2>
 Every circuit element (like an AND gate) which needs to be driven by <a class="el" href="classlcs_1_1_input_bus.html">lcs::InputBus</a> objects has to be derived from this class <a class="el" href="classlcs_1_1_module.html">Module</a>. User of libLCS desirous of defining his/her own element should subclass this class and redefine the virtual function Module::propogate. 
@@ -142,7 +143,7 @@ Destructor.
 <p>
 A subclass of the class <a class="el" href="classlcs_1_1_module.html">Module</a> should override this function so that it can be notified of a negetive edge on its input busses. If a <a class="el" href="namespacelcs.html#0c92d7059f3337c568d3a245248cc4983bbeaccde564270b39561ff89eef345a">lcs::LINE_NEG_EDGE</a> event occurs on an input bus, the bus will call this function on the corresponding module object as a notification of the occurance of the event. 
 <p>
-Reimplemented in <a class="el" href="classlcs_1_1_counter.html#b2f462c606aeb29caa5a3b797172af60">lcs::Counter&lt; bits, event &gt;</a>, <a class="el" href="classlcs_1_1_d_flip_flop.html#4e2e75cfb5e29cf295b6d172aaa44288">lcs::DFlipFlop&lt; type, delay &gt;</a>, <a class="el" href="classlcs_1_1_frequency_divider.html#7b46b1e14576de6ee8e317d9b3c67fa4">lcs::FrequencyDivider&lt; factor, delay &gt;</a>, <a class="el" href="classlcs_1_1_j_k_flip_flop.html#4cca684e8aa6850eea8e33a057996935">lcs::JKFlipFlop&lt; type, delay &gt;</a>, and <a class="el" href="classlcs_1_1_register.html#549533a92d6e5221028f7e788d059fce">lcs::Register&lt; bits, edgeType, delay &gt;</a>.
+Reimplemented in <a class="el" href="classlcs_1_1_counter.html#b2f462c606aeb29caa5a3b797172af60">lcs::Counter&lt; bits, event &gt;</a>, <a class="el" href="classlcs_1_1_d_flip_flop.html#4e2e75cfb5e29cf295b6d172aaa44288">lcs::DFlipFlop&lt; type, delay &gt;</a>, <a class="el" href="classlcs_1_1_frequency_divider.html#7b46b1e14576de6ee8e317d9b3c67fa4">lcs::FrequencyDivider&lt; factor, delay &gt;</a>, <a class="el" href="classlcs_1_1_j_k_flip_flop.html#4cca684e8aa6850eea8e33a057996935">lcs::JKFlipFlop&lt; type, delay &gt;</a>, <a class="el" href="classlcs_1_1_register.html#549533a92d6e5221028f7e788d059fce">lcs::Register&lt; bits, edgeType, delay &gt;</a>, and <a class="el" href="classlcs_1_1_shift_reg.html#5a91b4fe316dffef3e79da34bd8fb515">lcs::ShiftReg&lt; bits, edgeType, shift, delay &gt;</a>.
 </div>
 </div><p>
 <a class="anchor" name="0d85c2fcb6991b21b01a7a6294d69935"></a><!-- doxytag: member="lcs::Module::onPosEdge" ref="0d85c2fcb6991b21b01a7a6294d69935" args="(int portId)" -->
@@ -164,7 +165,7 @@ Reimplemented in <a class="el" href="classlcs_1_1_counter.html#b2f462c606aeb29ca
 <p>
 A subclass of the class <a class="el" href="classlcs_1_1_module.html">Module</a> should override this function so that it can be notified of a positive edge on its input busses. If a <a class="el" href="namespacelcs.html#0c92d7059f3337c568d3a245248cc49864383bb5b7d977a50e2b471e7b03fc7a">lcs::LINE_POS_EDGE</a> event occurs on an input bus, the bus will call this function on the corresponding module object as a notification of the occurance of the event. 
 <p>
-Reimplemented in <a class="el" href="classlcs_1_1_counter.html#0086136907d04d29910049986736c3ef">lcs::Counter&lt; bits, event &gt;</a>, <a class="el" href="classlcs_1_1_d_flip_flop.html#026b9c1f15330a8c7ed8301f909e7d3f">lcs::DFlipFlop&lt; type, delay &gt;</a>, <a class="el" href="classlcs_1_1_frequency_divider.html#8732adc07114883e5d45d25c52b6596b">lcs::FrequencyDivider&lt; factor, delay &gt;</a>, <a class="el" href="classlcs_1_1_j_k_flip_flop.html#5e94ef32a7f34281a7e8f56ec3ed4504">lcs::JKFlipFlop&lt; type, delay &gt;</a>, and <a class="el" href="classlcs_1_1_register.html#7a51dc635a180b7ae26729693af35136">lcs::Register&lt; bits, edgeType, delay &gt;</a>.
+Reimplemented in <a class="el" href="classlcs_1_1_counter.html#0086136907d04d29910049986736c3ef">lcs::Counter&lt; bits, event &gt;</a>, <a class="el" href="classlcs_1_1_d_flip_flop.html#026b9c1f15330a8c7ed8301f909e7d3f">lcs::DFlipFlop&lt; type, delay &gt;</a>, <a class="el" href="classlcs_1_1_frequency_divider.html#8732adc07114883e5d45d25c52b6596b">lcs::FrequencyDivider&lt; factor, delay &gt;</a>, <a class="el" href="classlcs_1_1_j_k_flip_flop.html#5e94ef32a7f34281a7e8f56ec3ed4504">lcs::JKFlipFlop&lt; type, delay &gt;</a>, <a class="el" href="classlcs_1_1_register.html#7a51dc635a180b7ae26729693af35136">lcs::Register&lt; bits, edgeType, delay &gt;</a>, and <a class="el" href="classlcs_1_1_shift_reg.html#befb5f7c264ec83bca4f3017c3e7c8c0">lcs::ShiftReg&lt; bits, edgeType, shift, delay &gt;</a>.
 </div>
 </div><p>
 <a class="anchor" name="7e0c94b92b58ae869d7663b16c566a7d"></a><!-- doxytag: member="lcs::Module::onStateChange" ref="7e0c94b92b58ae869d7663b16c566a7d" args="(int portId)" -->
