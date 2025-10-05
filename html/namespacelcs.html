@@ -140,6 +140,8 @@ All classes in libLCS are defined under the lcs namespace.
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlcs_1_1_register.html">Register</a></td></tr>
 
+<tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlcs_1_1_shift_reg.html">ShiftReg</a></td></tr>
+
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlcs_1_1_simulation.html">Simulation</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlcs_1_1_system_timer.html">SystemTimer</a></td></tr>
@@ -177,6 +179,10 @@ All classes in libLCS are defined under the lcs namespace.
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">enum &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelcs.html#91e9a4688ddaaa669034e8804d4f27e3">PulseEdge</a> { <a class="el" href="namespacelcs.html#91e9a4688ddaaa669034e8804d4f27e356d1576a88e39e202f0dd530b4eb227b">POS_EDGE</a> =  2048, 
 <a class="el" href="namespacelcs.html#91e9a4688ddaaa669034e8804d4f27e3bd52f905e50c7a936058e30bbea8c993">NEG_EDGE</a> =  2049
+ }</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top">enum &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelcs.html#43ea00457860015506a7bab58d414c88">Shift</a> { <a class="el" href="namespacelcs.html#43ea00457860015506a7bab58d414c88e0b341c1287e6ccc33d93deaeb9658f0">LEFT_SHIFT</a> =  7000, 
+<a class="el" href="namespacelcs.html#43ea00457860015506a7bab58d414c88bec7a32c93b7a1e7ea2cbca507d1c316">RIGHT_SHIFT</a> =  7001
  }</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">enum &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelcs.html#21dbb9d4467c19884aac04e2d1265cf4">SortOrder</a> { <a class="el" href="namespacelcs.html#21dbb9d4467c19884aac04e2d1265cf44dba5794b4a765f46276e13afffeeb71">ASCENDING</a> =  6000, 
@@ -301,6 +307,29 @@ An enumeration to define the two possible edge types of pulse signals. <dl compa
 The value which denotes a positive edge of a pulse signal. </td></tr>
 <tr><td valign="top"><em><a class="anchor" name="91e9a4688ddaaa669034e8804d4f27e3bd52f905e50c7a936058e30bbea8c993"></a><!-- doxytag: member="NEG_EDGE" ref="91e9a4688ddaaa669034e8804d4f27e3bd52f905e50c7a936058e30bbea8c993" args="" -->NEG_EDGE</em>&nbsp;</td><td>
 The value which denotes a negetive edge of a pulse signal. </td></tr>
+</table>
+</dl>
+
+</div>
+</div><p>
+<a class="anchor" name="43ea00457860015506a7bab58d414c88"></a><!-- doxytag: member="lcs::Shift" ref="43ea00457860015506a7bab58d414c88" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="namespacelcs.html#43ea00457860015506a7bab58d414c88">lcs::Shift</a>          </td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+An enumerated set of data types which denote the type of shift, left or right. <dl compact><dt><b>Enumerator: </b></dt><dd>
+<table border="0" cellspacing="2" cellpadding="0">
+<tr><td valign="top"><em><a class="anchor" name="43ea00457860015506a7bab58d414c88e0b341c1287e6ccc33d93deaeb9658f0"></a><!-- doxytag: member="LEFT_SHIFT" ref="43ea00457860015506a7bab58d414c88e0b341c1287e6ccc33d93deaeb9658f0" args="" -->LEFT_SHIFT</em>&nbsp;</td><td>
+Denotes a left shift. </td></tr>
+<tr><td valign="top"><em><a class="anchor" name="43ea00457860015506a7bab58d414c88bec7a32c93b7a1e7ea2cbca507d1c316"></a><!-- doxytag: member="RIGHT_SHIFT" ref="43ea00457860015506a7bab58d414c88bec7a32c93b7a1e7ea2cbca507d1c316" args="" -->RIGHT_SHIFT</em>&nbsp;</td><td>
+Denotes a right shift. </td></tr>
 </table>
 </dl>
 
