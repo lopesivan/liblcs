@@ -47,6 +47,7 @@
 #include "or.h"
 #include "register.h"
 #include "xor.h"
+#include "shiftreg.h"
 #include "simul.h"
 #include "tester.h"
 
