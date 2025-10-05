@@ -2,21 +2,21 @@
 // This file is distributed as part of the libLCS library.
 // libLCS is C++ Logic Circuit Simulation library.
 //
-// Copyright (c) 2006-2007, B. R. Siva Chandra
+// Copyright (c) 2006-2007, B. R. Siva Chandra, India
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // In case you would like to contact the author, use the following e-mail
 // address: sivachandra_br@yahoo.com
@@ -44,23 +44,10 @@ public:
     ///
     virtual ~Module() {}
 
-    /// A subclass of the class Module should override this function so that it can be
-    /// notified of a state change on its input busses. If a lcs::LINE_STATE_CHANGE event
-    /// occurs on an input bus, the bus will call this function on the corresponding module
-    /// object as a notification of the occurance of the event.
-    virtual void onStateChange(int portId) {}
-
-    /// A subclass of the class Module should override this function so that it can be
-    /// notified of a positive edge on its input busses. If a lcs::LINE_POS_EDGE event
-    /// occurs on an input bus, the bus will call this function on the corresponding module
-    /// object as a notification of the occurance of the event.
-    virtual void onPosEdge(int portId) {}
-
-    /// A subclass of the class Module should override this function so that it can be
-    /// notified of a negetive edge on its input busses. If a lcs::LINE_NEG_EDGE event
-    /// occurs on an input bus, the bus will call this function on the corresponding module
-    /// object as a notification of the occurance of the event.
-    virtual void onNegEdge(int portId) {}
+    /// Propogates the data line states of the inputs bus(ses) of the module to the output
+    /// bus(ses) of this module. A subclass of the class Module should override this
+    /// function to perform the real logic operations on input data lines.
+    virtual void propogate(void) {}
 
 };
 
