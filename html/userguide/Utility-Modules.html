@@ -1,47 +1,61 @@
 <html lang="en">
 <head>
-<title>libLCS Userguide</title>
+<title>Utility Modules - libLCS Userguide</title>
 <meta http-equiv="Content-Type" content="text/html">
 <meta name="description" content="libLCS Userguide">
-<meta name="generator" content="makeinfo 4.3">
-<link href="http://www.gnu.org/software/texinfo/" rel="generator-home">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Introduction-to-libLCS.html#Introduction-to-libLCS" title="Introduction to libLCS">
+<link rel="prev" href="System-Time-and-Sequential-Circuit-Elements.html#System-Time-and-Sequential-Circuit-Elements" title="System Time and Sequential Circuit Elements">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
-Copyright (C) 2006, 2007 Siva Chandra.-->
+Copyright (C) 2006, 2007 Siva Chandra.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
 </head>
 <body>
 <div class="node">
 <p>
-Node:<a name="Utility%20Modules">Utility Modules</a>,
-Previous:<a rel="previous" accesskey="p" href="System-Time-and-Sequential-Circuit-Elements.html#System%20Time%20and%20Sequential%20Circuit%20Elements">System Time and Sequential Circuit Elements</a>,
-Up:<a rel="up" accesskey="u" href="Introduction-to-libLCS.html#Introduction%20to%20libLCS">Introduction to libLCS</a>
-<hr><br>
+<a name="Utility-Modules"></a>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="System-Time-and-Sequential-Circuit-Elements.html#System-Time-and-Sequential-Circuit-Elements">System Time and Sequential Circuit Elements</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Introduction-to-libLCS.html#Introduction-to-libLCS">Introduction to libLCS</a>
+<hr>
 </div>
 
-<h3 class="section">Utility Modules</h3>
+<h3 class="section">3.5 Utility Modules</h3>
 
-   <p>
+<p>
 libLCS provides few off-the-shelf utility modules which a user can use in his/her simulations. Each of these modules is 
 described in detail in this section.
 
 
-<h4 class="subsection">Buffer</h4>
+<h4 class="subsection">3.5.1 Buffer</h4>
 
-   <p>
+<p>
 The <code>Buffer</code> template class can be used as a delay buffer for any bus. This class requires two template parameters.
 The first parameter indicates the number of lines in the bus for which it acts as a buffer, and the second parameter 
 indicates the delay. The declaration of the <code>Buffer</code> class is as follows:
 
 <pre class="example">     template &lt;unsigned int lines, unsigned int delay = 0&gt;
      class Buffer;
-     </pre>
-   
+</pre>
+   <p>
 The <code>Buffer</code> class is defined in the header file <code>lcs/buffer.h</code>. Note that the above declaration indicates a 
 default value of 0 for the delay of the buffer module. A small example illustrating its usage is as below. The buffer 
 class constructor requires the output bus as the first argument, and the input bus as the second argument.
 
-<pre class="example">
-     <pre class="verbatim">
+<pre class="example"><pre class="verbatim">     
      #include &lt;lcs/lcs.h>
      
      using namespace lcs;
@@ -65,13 +79,13 @@ class constructor requires the output bus as the first argument, and the input b
      
          return 0;
      }
-     </pre>
-     </pre>
-   
-
-<h4 class="subsection">FanOut</h4>
-
+</pre>
+</pre>
    <p>
+
+<h4 class="subsection">3.5.2 FanOut</h4>
+
+<p>
 The <code>FanOut</code> template class (which requires two template parameters) encapsulates a module which takes a single 
 input and generates a user specified number of copies of the input as output. The desired number of outputs should be 
 specified as the first template parameter. The second template parameter specifies the input to output propogation 
@@ -79,15 +93,14 @@ delay. The declaration of the <code>FanOut</code> class is as follows:
 
 <pre class="example">     template &lt;unsigned int n = 1, unsigned int delay = 0&gt;
      class FanOut;
-     </pre>
-   
+</pre>
+   <p>
 The <code>FanOut</code> class is defined in the header file <code>lcs/fanout.h</code>. Note that the above declaration indicates a 
 default value of 1 output line, and a default value of 0 propogation delay of the fanout module. A small example 
 illustrating its usage is as below. The <code>FanOut</code> class constructor requires the output bus as the first argument, 
 and the single-line input bus as the second argument.
 
-<pre class="example">
-     <pre class="verbatim">
+<pre class="example"><pre class="verbatim">     
      #include &lt;lcs/lcs.h>
      
      using namespace lcs;
@@ -114,9 +127,110 @@ and the single-line input bus as the second argument.
      
          return 0;
      }
-     </pre>
-     </pre>
-   
+</pre>
+</pre>
+   <p>
+
+<h4 class="subsection">3.5.3 Register</h4>
+
+<p>
+libLCS provides a module class, a template class named <code>Register</code>, which encapsulates a hardware register. 
+The register module reuires one input data bus, one clock signal input, and one output data bus. The input bus 
+and the output bus should have the same width. This width is also equal to the width of the register. The input 
+data bus line states are tranferred to the output data bus lines at the occurance of a pulse edge on the clock 
+signal input.
+   <pre class="sp">
+
+</pre>
+The <code>Register</code> class is defined in the header file <code>register.h</code>. The class declaration is as follows:
+
+<pre class="example">     template&lt;unsigned int bits = 1, PulseEdge edgeType = POS_EDGE, unsigned int delay = 0&gt;
+     class Register; // Derived publicly from the class Module.
+</pre>
+   <p>
+The third template parameter <code>delay</code> indicates the input to output propogation delay of the register module 
+in system time units. Below is a simple example, which uses feedback around a (2-bit register + two NOT gates) 
+system, to illustrate the usage of the module class <code>Register</code>.
+
+<pre class="example"><pre class="verbatim">     
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     
+     int main(void)
+     {
+         Bus&lt;2> in(3), out(0);
+     
+         Clock clk = Clock::getClock();
+     
+         // Initialising a 2-bit register which 
+         // which responds to positive edges on
+         // its clock input. The input to output
+         // propogation delay of the register is 
+         // 0 time units.
+         Register&lt;2, POS_EDGE, 0> reg(out, in, clk);
+     
+         Not&lt;> n1(in[0], out[0]);
+         Not&lt;> n2(in[1], out[1]);
+     
+         ChangeMonitor&lt;2> cmop(out, "Output");
+     
+         Simulation::setStopTime(2000);
+         Simulation::start();
+     
+         return 0;
+     }
+</pre>
+</pre>
+   <p>
+It is upto to the reader to compile and run to verify the result of the above simulation. 
+   <pre class="sp">
+
+</pre>
+The <code>Register</code> class has an overloaded <code>operator[]</code> as its member which enables reading (but not writing) 
+of the register bits by indexing suitably.
+
+
+<h4 class="subsection">3.5.4 Counter</h4>
+
+<p>
+A module template class <code>Counter</code> is among the off-the-shelf utilities classes provided by libLCS. The 
+template parameters specify the bit-width of the counter and the triggering event which leads to an increment in
+the count value of the counter. The class <code>Counter</code> is defined in the header file <code>counter.h</code>. The 
+class declaration is as follows.
+
+<pre class="example">     template&lt;unsigned int bits, LineEvent event = LINE_POS_EDGE&gt;
+     class lcs::Counter; // Derived publicly from the class Module
+</pre>
+   <p>
+The following example illustrates the  usage of the class <code>Counter</code>. It is upto to the user to compile and run 
+to verify the result of the simulation.
+
+<pre class="example"><pre class="verbatim">     
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     
+     int main(void)
+     {
+         Bus&lt;4> out;
+         Clock clk = Clock::getClock();
+     
+         // Initialising a 4-bit counter which 
+         // increments the count at the occurance
+         // of a  positive edge on its clock input.
+         Counter&lt;4, LINE_POS_EDGE> cnt(out, clk);
+     
+         ChangeMonitor&lt;4> cmop(out, "Count");
+     
+         Simulation::setStopTime(4000);
+         Simulation::start();
+     
+         return 0;
+     }
+</pre>
+</pre>
+   <p>
 
 
    <p>
