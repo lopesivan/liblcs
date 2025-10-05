@@ -1,0 +1,125 @@
+<html lang="en">
+<head>
+<title>libLCS Userguide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="libLCS Userguide">
+<meta name="generator" content="makeinfo 4.3">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home">
+<!--
+This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
+Copyright (C) 2006, 2007 Siva Chandra.-->
+</head>
+<body>
+<div class="node">
+<p>
+Node:<a name="Utility%20Modules">Utility Modules</a>,
+Previous:<a rel="previous" accesskey="p" href="System-Time-and-Sequential-Circuit-Elements.html#System%20Time%20and%20Sequential%20Circuit%20Elements">System Time and Sequential Circuit Elements</a>,
+Up:<a rel="up" accesskey="u" href="Introduction-to-libLCS.html#Introduction%20to%20libLCS">Introduction to libLCS</a>
+<hr><br>
+</div>
+
+<h3 class="section">Utility Modules</h3>
+
+   <p>
+libLCS provides few off-the-shelf utility modules which a user can use in his/her simulations. Each of these modules is 
+described in detail in this section.
+
+
+<h4 class="subsection">Buffer</h4>
+
+   <p>
+The <code>Buffer</code> template class can be used as a delay buffer for any bus. This class requires two template parameters.
+The first parameter indicates the number of lines in the bus for which it acts as a buffer, and the second parameter 
+indicates the delay. The declaration of the <code>Buffer</code> class is as follows:
+
+<pre class="example">     template &lt;unsigned int lines, unsigned int delay = 0&gt;
+     class Buffer;
+     </pre>
+   
+The <code>Buffer</code> class is defined in the header file <code>lcs/buffer.h</code>. Note that the above declaration indicates a 
+default value of 0 for the delay of the buffer module. A small example illustrating its usage is as below. The buffer 
+class constructor requires the output bus as the first argument, and the input bus as the second argument.
+
+<pre class="example">
+     <pre class="verbatim">
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     using namespace std;
+     
+     int main(void)
+     {
+         Bus&lt;5> output, input;
+     
+         // Declaring a 5 input buffer with a delay of
+         // 5 system time units.
+         Buffer&lt;5, 5> buffer(output, input);
+     
+         ChangeMonitor&lt;5> cm(input, "input", DUMP_ON);
+         ChangeMonitor&lt;5> cb(output, "output", DUMP_ON);
+     
+         Tester&lt;5> tester(input);
+     
+         Simulation::setStopTime(5000);
+         Simulation::start();
+     
+         return 0;
+     }
+     </pre>
+     </pre>
+   
+
+<h4 class="subsection">FanOut</h4>
+
+   <p>
+The <code>FanOut</code> template class (which requires two template parameters) encapsulates a module which takes a single 
+input and generates a user specified number of copies of the input as output. The desired number of outputs should be 
+specified as the first template parameter. The second template parameter specifies the input to output propogation 
+delay. The declaration of the <code>FanOut</code> class is as follows:
+
+<pre class="example">     template &lt;unsigned int n = 1, unsigned int delay = 0&gt;
+     class FanOut;
+     </pre>
+   
+The <code>FanOut</code> class is defined in the header file <code>lcs/fanout.h</code>. Note that the above declaration indicates a 
+default value of 1 output line, and a default value of 0 propogation delay of the fanout module. A small example 
+illustrating its usage is as below. The <code>FanOut</code> class constructor requires the output bus as the first argument, 
+and the single-line input bus as the second argument.
+
+<pre class="example">
+     <pre class="verbatim">
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     using namespace std;
+     
+     int main(void)
+     {
+         Bus&lt;5> output;
+         Clock clk = Clock::getClock();
+         
+         // Initialising a FanOut object which takes the 
+         // system clock as input and generates 5 copies 
+         // of it. Also, the time delay between the new 
+         // copies and the input clock pulse is specified 
+         // through the second template parameter as 5 
+         // system time units.
+         FanOut&lt;5, 5> fanout(output, clk); 
+     
+         ChangeMonitor&lt;1> cm(clk, "clk", DUMP_ON);
+         ChangeMonitor&lt;5> cb(output, "output", DUMP_ON);
+     
+         Simulation::setStopTime(5000);
+         Simulation::start();
+     
+         return 0;
+     }
+     </pre>
+     </pre>
+   
+
+
+   <p>
+
+   </body></html>
+
