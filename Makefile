@@ -45,8 +45,8 @@ ARC  = ar
 PR_INC = -I.
 PR_LNK = -L./lib
 
-OBJS = objs/clock.o objs/line.o objs/fa.o objs/linestate.o objs/simul.o objs/systime.o objs/hiddenmodman.o \
-objs/bit.o objs/vcdman.o objs/bus.o
+OBJS = obj/clock.o obj/line.o obj/fa.o obj/linestate.o obj/simul.o obj/systime.o obj/hiddenmodman.o \
+obj/bit.o obj/vcdman.o obj/bus.o
 
 EXAMPLES = 1bit_fulladd_using_gates 4bit_shiftregister_using_Dflipflops \
 4bit_counter_using_Dflipflops functional_module_fulladder \
@@ -70,7 +70,7 @@ examples : $(EXAMPLES)
 
 .PHONY : clean
 clean:
-	rm lib/*.a bin/*.exe objs/*.o 
+	rm lib/*.a bin/*.exe obj/*.o 
 
 
 ##############################################################################
@@ -162,32 +162,33 @@ lib/libLCS.a : $(OBJS)
 #################################################################################
 ## Sources
 
-objs/clock.o : src/clock.cpp lcs/clock.h
-	$(CPP) -c src/clock.cpp -o objs/clock.o $(PR_INC)
+obj/clock.o : src/clock.cpp lcs/clock.h
+	$(CPP) -c src/clock.cpp -o obj/clock.o $(PR_INC)
 
-objs/fa.o : src/fa.cpp lcs/fa.h
-	$(CPP) -c src/fa.cpp -o objs/fa.o $(PR_INC)
+obj/fa.o : src/fa.cpp lcs/fa.h
+	$(CPP) -c src/fa.cpp -o obj/fa.o $(PR_INC)
 
-objs/line.o : src/line.cpp lcs/line.h
-	$(CPP) -c src/line.cpp -o objs/line.o $(PR_INC)
+obj/line.o : src/line.cpp lcs/line.h
+	$(CPP) -c src/line.cpp -o obj/line.o $(PR_INC)
 
-objs/linestate.o : src/linestate.cpp lcs/linestate.h
-	$(CPP) -c src/linestate.cpp -o objs/linestate.o $(PR_INC)
+obj/linestate.o : src/linestate.cpp lcs/linestate.h
+	$(CPP) -c src/linestate.cpp -o obj/linestate.o $(PR_INC)
 
-objs/simul.o : src/simul.cpp lcs/simul.h
-	$(CPP) -c src/simul.cpp -o objs/simul.o $(PR_INC)
+obj/simul.o : src/simul.cpp lcs/simul.h
+	$(CPP) -c src/simul.cpp -o obj/simul.o $(PR_INC)
 
-objs/systime.o : src/systime.cpp lcs/systime.h
-	$(CPP) -c src/systime.cpp -o objs/systime.o $(PR_INC)
+obj/systime.o : src/systime.cpp lcs/systime.h
+	$(CPP) -c src/systime.cpp -o obj/systime.o $(PR_INC)
 	
-objs/hiddenmodman.o : src/hiddenmodman.cpp lcs/hiddenmodman.h
-	$(CPP) -c src/hiddenmodman.cpp -o objs/hiddenmodman.o $(PR_INC)
+obj/hiddenmodman.o : src/hiddenmodman.cpp lcs/hiddenmodman.h
+	$(CPP) -c src/hiddenmodman.cpp -o obj/hiddenmodman.o $(PR_INC)
 
-objs/bit.o : src/bit.cpp lcs/bit.h
-	$(CPP) -c src/bit.cpp -o objs/bit.o $(PR_INC)
+obj/bit.o : src/bit.cpp lcs/bit.h
+	$(CPP) -c src/bit.cpp -o obj/bit.o $(PR_INC)
 	
-objs/vcdman.o : src/vcdman.cpp lcs/vcdman.h
-	$(CPP) -c src/vcdman.cpp -o objs/vcdman.o $(PR_INC)
+obj/vcdman.o : src/vcdman.cpp lcs/vcdman.h
+	$(CPP) -c src/vcdman.cpp -o obj/vcdman.o $(PR_INC)
 	
-objs/bus.o : src/bus.cpp lcs/bus.h
-	$(CPP) -c src/bus.cpp -o objs/bus.o $(PR_INC)
+obj/bus.o : src/bus.cpp lcs/bus.h
+	$(CPP) -c src/bus.cpp -o obj/bus.o $(PR_INC)
+
