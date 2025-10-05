@@ -2,21 +2,21 @@
 // This file is distributed as part of the libLCS library.
 // libLCS is C++ Logic Circuit Simulation library.
 //
-// Copyright (c) 2006-2007, B. R. Siva Chandra
+// Copyright (c) 2006-2007, B. R. Siva Chandra, India
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // In case you would like to contact the author, use the following e-mail
 // address: sivachandra_br@yahoo.com
@@ -52,7 +52,7 @@ public:
 
     /// Copy constructor.
     ///
-    ListIterator(const ListIterator<T> &li);
+    ListIterator(const ListIterator &li);
 
     /// Destructor.
     ///
@@ -74,10 +74,6 @@ public:
     /// through the default constructor.
     void setRootNode(ListNode<T> *node);
 
-    ///
-    ///
-    void operator=(const ListIterator<T> &li);
-
 private:
     ListNode<T> *initNode, *currentNode;
 };
@@ -93,7 +89,7 @@ ListIterator<T>::ListIterator(ListNode<T> *node)
 { }
 
 template <class T>
-ListIterator<T>::ListIterator(const ListIterator<T> &li)
+ListIterator<T>::ListIterator(const ListIterator &li)
             : Iterator<T>(), initNode(li.initNode), currentNode(li.currentNode)
 { }
 
@@ -134,13 +130,6 @@ template <class T>
 void ListIterator<T>::reset(void)
 {
     currentNode = initNode;
-}
-
-template <class T>
-void ListIterator<T>::operator=(const ListIterator<T> &li)
-{
-    initNode = li.initNode;
-    currentNode = li.currentNode;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -200,11 +189,6 @@ public:
     /// The parameter <I> validity </I> will hold <B>true</B> on success and <B>false</B> on
     /// failure.
     T last();
-
-    /// Checks if an element is present in the list. Returns \p true if present, \p false
-    /// if not. The type T should support the operator '==' for this function to compile
-    /// successfully.
-    bool isPresent(const T &t);
 
     /// Returns the number of data nodes in the list.
     ///
@@ -341,21 +325,6 @@ T List<T>::last()
 }
 
 template <class T>
-bool List<T>::isPresent(const T &t)
-{
-    ListNode<T> *node = dataPtr->node;
-    while (node != NULL)
-    {
-        if (node->data == t)
-            return true;
-
-        node = node->nextNodePtr;
-    }
-
-    return false;
-}
-
-template <class T>
 int List<T>::getSize(void)
 {
     return *size;
@@ -429,7 +398,6 @@ void List<T>::remove(T e)
                     lastNodeDataPtr->node = NULL;
                 else
                     node->previousNodePtr = NULL;
-
             }
             else
             {
@@ -441,15 +409,11 @@ void List<T>::remove(T e)
                 {
                     lastNodeDataPtr->node = node->previousNodePtr;
                 }
-                else
-                    tempNode->previousNodePtr = node->previousNodePtr;
 
                 delete node;
                 (*size)--;
                 node = tempNode;
             }
-
-            return;
         }
         else
         {
@@ -461,9 +425,6 @@ void List<T>::remove(T e)
 template <class T>
 void List<T>::operator=(const List<T> &l)
 {
-    if (refCount == l.refCount)
-        return;
-
     if (*refCount <= 1)
     {
         destroy();
