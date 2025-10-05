@@ -1,16 +1,16 @@
 ##########################################################################
-#            LICENSE AND TERMS OF USE FOR libLCS-0.0.58                  #
+#            LICENSE AND TERMS OF USE FOR libLCS-0.0.59                  #
 ##########################################################################
 
-    libLCS-0.0.58 is a library for logic circuit simulation in C++.
+    libLCS-0.0.59 is a library for logic circuit simulation in C++.
               Copyright (C) 2006, 2007 Siva Chandra
 
-    libLCS-0.0.58 is free software; you can redistribute it and/or
+    libLCS-0.0.59 is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
     version 2.1 of the License, or (at your option) any later version.
 
-    libLCS-0.0.58 is distributed in the hope that it will be useful,
+    libLCS-0.0.59 is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Lesser General Public License for more details.
