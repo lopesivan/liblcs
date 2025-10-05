@@ -53,7 +53,7 @@ public:
 
     /// Destructor.
     ///
-    ~Register();
+    virtual ~Register();
 
     /// Internal function which will never be used by a user of libLCS.
     ///
