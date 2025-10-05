@@ -1,22 +1,22 @@
 //////////////////////////////////////////////////////////////////////////////////
-// This file is distributed as part of the libLCS library.
-// libLCS is C++ Logic Circuit Simulation library.
+// This file is distributed as part of the Improla library.
+// Improla is a GUI framework for image processing.
 //
-// Copyright (c) 2006-2007, B. R. Siva Chandra
+// Copyright (c) 2006-2007, B. R. Siva Chandra, India
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
 //
-// This library is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// You should have received a copy of the GNU Library General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // In case you would like to contact the author, use the following e-mail
 // address: sivachandra_br@yahoo.com
@@ -26,27 +26,14 @@
 #define __LCS_BUS_H__
 
 #include "inbus.h"
-#include "expression.h"
-#include "contassmod.h"
-#include "hiddenmodman.h"
-#include <iostream>
+
 namespace lcs
 { // Start of namespace lcs.
 
-template <int outbits, typename InExprType, unsigned int delay = 0>
-class ContinuousAssignmentModule;
-
-/// This is a class encapsulating a set of data lines to be used as a generic bus in logic
-/// circuit systems. The data lines are conceptially organised in the little endian format.
-/// A user can set the bus line data through access control mechanism. Reading the individual
-/// data lines of a \p Bus object is achieved through the \p lcs::InputBus::operator[]
-/// function. There are overloaded operators provided which can be used to join two busses
-/// to form a wider composite bus.
-///
-/// <p>
-/// Writing to bus lines should only be allowed for a module which is driving the bus. This
-/// sort of access control is provided through the inner class \p LineAccessor, and the three
-/// member functions \p Bus::lock, \p Bus::unLock and \p Bus::getLineAccessor.
+/// A class encapsulating a set of data lines to be used as a generic bus in logic circuit
+/// systems. The data lines are conceptially organised in the little endian format. A user
+/// can set and read the individual data lines of the bus. There are overloaded operators
+/// provided which can be used to join two busses, or join a line to a bus.
 ///
 /// \param bits The number of data lines in the bus.
 ///
@@ -54,7 +41,7 @@ template <int bits = 1>
 class Bus : public InputBus<bits>
 {
 
-/// Bus classes of different sizes are friends of each other.
+/// Bus classes of other sizes are friends of this class.
 ///
 template <int w>
 friend class Bus;
@@ -62,15 +49,8 @@ friend class Bus;
 public:
 
     /// The default constructor.
-    /// The data lines are all initialised to the \p lcs::UNKNOWN state.
+    /// The data lines are all initialised to the lcs::UNKNOWN state.
     Bus(void);
-
-    /// Line initialising constructor. The bus lines are initialised in the little-endian
-    /// notation with the binary equivalent of a decimal integer. If the integer has
-    /// excess bits than the bus width, then they are ignored.
-    ///
-    /// \param val The decimal integer with which the bus lines have to be initialised.
-    Bus(int val);
 
     /// Copy constructor.
     /// Performs only a shallow copy. The new \p Bus object and \p bus share the same
@@ -84,147 +64,59 @@ public:
     ///
     virtual ~Bus();
 
-    /// Returns a part-bus formed from a set of consecutive lines of the original \p lcs::Bus
-    /// object. If \p s+w goes beyond the range of the original bus width, then, only the
-    /// lines within range are assigned lines of the new bus object.
+    /// The operator to read the data lines. It is inherited from lcs::InputBus.
     ///
-    /// \param w The width of the part-bus.
-    /// \param s The start bit from where the part-bus should be accumulated.
-    template <int w>
-    const Bus<w> partSelect(int s) const;
-
-    /// A template function to assign a continuous assignment expression to the bus.
-    /// All template parameters except the parameter \p delay are deduced from the
-    /// expression passed as an argument to the function. Hence, a call to this function
-    /// will have to explicitly specify a single parameter which indicates the assignment
-    /// delay.
-    template <unsigned int delay, int exBits, ExprType Type,
-              typename LExprType, typename RExprType>
-    void cass(const Expression<exBits, Type, LExprType, RExprType> &expr);
-
-    /// A template function to assign a continuous assignment to the bus from an
-    /// \p lcs::InputBus object. The template parameter \p width is deduced from the width
-    /// of the \p lcs::InputBus object passed as an argument to the function. Hence, a call
-    /// to this function will have to explicitly specify a single parameter which indicates
-    /// the assignment delay.
-    template <unsigned int delay, int width>
-    void cass(const InputBus<width> &b);
-
-    /// Assigns the binary bit equivalent of an integer to the bus lines.
-    ///
-    void operator=(int a);
-
-    /// Assigns a desired linestate to all the lines of the bus.
-    ///
-    void operator=(const LineState &l);
-
-    /// Assignment operator to facilitate assignment using an \p lcs::Expression object.
-    /// ie., the operator facilitates assignment with an expression of bitwise operations
-    /// on the right hand side of the assignment operator.
-    template <int w, ExprType Type, typename LExprType, typename RExprType>
-    void operator=(const Expression<w, Type, LExprType, RExprType> &expr);
-
-    /// Assignment operator for assignment with a delay-expression pair.
-    /// An example of usage of this overloaded assignment operator is as follows:
-    ///
-    /// <pre>
-    /// lcs::Bus<3> b1(0), b2(5), b3(7);
-    /// b1 = (5, b2 ^ b3);
-    /// </pre>
-    ///
-    /// In the second line of the above code snippet, an assignment is being made to the
-    /// \p lcs::Bus object on the LHS with a delay-expression pair in the RHS. The value of
-    /// delay used here is 5 system time units. Note the use of the <b> neccessary </b>
-    /// parentheses enclosing the delay-expression pair.
-    template <int w, ExprType Type, typename LExprType, typename RExprType>
-    void operator=(const DelayExprPair<w, Type, LExprType, RExprType> &dep);
-
-    /// Assignment operator for assignment with a delay-state pair.
-    /// An example of usage of this overloaded assignment operator is as follows:
-    ///
-    /// <pre>
-    /// lcs::Bus<3> b1;
-    /// b1 = (5, lcs::HIGH);
-    /// </pre>
-    ///
-    /// In the second line of the above code snippet, an assignment is being made to the
-    /// \p lcs::Bus object on the LHS with a delay-state pair in the RHS. The value of
-    /// delay used here is 5 system time units. Note the use of the <b> neccessary </b>
-    /// parentheses enclosing the delay-state pair.
-    void operator=(const DelayStatePair &dsp);
-
     using InputBus<bits>::operator[];
-    using InputBus<bits>::toInt;
-    using InputBus<bits>::toStr;
 
-    /// Overloaded operator which returns a suitable expression object corresponding
-    /// to the line at index \p i. This is done so that bit-selects can be used in expressions of
-    /// bitwise operations. An \p OutOfRangeException is thrown if the index value \p i is beyond
-    /// the bus width.
-    inline Expression<1, LINE_EXPR, void, void> operator[](int i) throw(OutOfRangeException<int>);
+    /// The operator which can be used to read and write data onto the lines of the bus.
+    ///
+    /// \param index The index of the data line in the bus. Note that all data in libLCS
+    /// is stored in the little-endian format.
+    ///
+    Line& operator[](int index);
 
-    /// The overloaded operator to join data lines from two busses and form a new composite
-    /// bus. The right operand bus takes the MSB locations.
+    /// The overloaded operator to join data lines from two busses and form a new bus
+    /// from these. The right operand bus takes the MSB locations.
     ///
     /// \param bits The width of the left-operand bus
     /// \param w The width of the right operand bus
-    /// \param bus The right operand \p lcs::Bus object.
+    /// \param bus The right operand Bus object.
     ///
     template <int w>
-    const Bus<w+bits> operator,(const Bus<w> &bus) const;
+    const Bus<w+bits> operator*(const Bus<w> &bus) const;
 
+    /// The overloaded operator to join a data line to a bus to form a new bus. The line
+    /// to be joined will have to be the right operand. The joined line takes the MSB
+    /// location in the resulting Bus object.
     ///
+    /// \param line The right operand lcs::Line object.
     ///
-    template <int w>
-    const InputBus<w+bits> operator,(const InputBus<w> &bus) const;
+    const Bus<bits+1> operator*(const Line &line) const;
 
-    /// The overloaded operator to join a data line to a bus to form a new composite bus.
-    /// The line to be joined will have to be the right operand. The joined line takes
-    /// the MSB location in the resulting \p lcs::Bus object.
+    /// The assignment operator which sets the data lines to a binary equivalent of the
+    /// decimal argument \p value.
     ///
-    /// \param line The right operand \p lcs::Line object.
+    /// \param value The decimal equivalent of the binary value which has to be set.
     ///
-    const Bus<bits+1> operator,(const Line &line) const;
+    void operator=(int value);
 
 private:
 
-    /// Does nothing. This function is inherited from \p InputBus. However, it has been
-    /// declared private so that a lcs::Module derivative is prevented from using a
-    /// \p lcs::Bus object to register to drive a module.
-    void notify(Module *mod, const LineEvent &event, const int &portId,
-                const int &line = -1) throw(OutOfRangeException<int>)
-    {}
+    /// This function is inherited from InputBus. However, it has been declared
+    /// private so that the user is prevented from using a Bus object to drive/un-drive
+    /// a module.
+    void drive(Module *mod) {}
 
-    /// Does nothing. This function is inherited from \p InputBus. However, it has been
-    /// declared private so that the user is prevented from using a \p Bus object to
-    /// de-register to drive (or un-drive) a module.
-    void stopNotification(Module *mod, const LineEvent &event, const int &portId,
-                          const int &line = -1) throw(OutOfRangeException<int>)
-    {}
+    /// This function is inherited from InputBus. However, it has been declared
+    /// private so that the user is prevented from using a Bus object to drive/un-drive
+    /// a module.
+    void unDrive(Module *mod) {}
 };
 
 template <int bits>
 Bus<bits>::Bus(void)
    : InputBus<bits>()
 {}
-
-template <int bits>
-Bus<bits>::Bus(int a)
-   : InputBus<bits>()
-{
-    Line *data = InputBus<bits>::dataPtr->data;
-
-    for (int i = 0; i < bits; i++)
-    {
-        int b = a%2;
-        if (b == 0)
-            data[i].setLineValue(LOW);
-        else
-            data[i].setLineValue(HIGH);
-
-        a = a/2;
-    }
-}
 
 template <int bits>
 Bus<bits>::Bus(const Bus<bits> &bus)
@@ -236,42 +128,47 @@ Bus<bits>::~Bus()
 {}
 
 template <int bits>
-template <unsigned int delay, int exBits, ExprType Type,
-          typename LExprType, typename RExprType>
-void Bus<bits>::cass(const Expression<exBits, Type, LExprType, RExprType> &expr)
+Line& Bus<bits>::operator[](int index)
 {
-    ContinuousAssignmentModule<
-                                bits, Expression<exBits, Type, LExprType, RExprType>, delay
-                              > *mod
-    = new ContinuousAssignmentModule<
-                                bits, Expression<exBits, Type, LExprType, RExprType>, delay
-                                    >(*this, expr);
+    Line *data, line;
+    data = InputBus<bits>::dataPtr->data;
 
-    HiddenModuleManager::registerModule(mod);
+    return data[index];
 }
 
 template <int bits>
-template <unsigned int delay, int width>
-void Bus<bits>::cass(const InputBus<width> &b)
+template <int w>
+const Bus<w+bits> Bus<bits>::operator*(const Bus<w> &bus) const
 {
-    Expression<width, BUS_EXPR, void, void> expr(b);
+    Bus<w+bits> b;
+    Line *data = InputBus<bits>::dataPtr->data;
+    for (int i = 0; i < bits; i++)
+        b[i] = data[i];
 
-    ContinuousAssignmentModule<
-                                bits, Expression<width, BUS_EXPR, void, void>, delay
-                              > *mod
-    = new ContinuousAssignmentModule<
-                                bits, Expression<width, BUS_EXPR, void, void>, delay
-                                    >(*this, expr);
+    data = bus.dataPtr->data;
+    for (int i = 0; i < w; i++)
+        b[i+bits] = data[i];
 
-    HiddenModuleManager::registerModule(mod);
+    return b;
+}
 
+template <int bits>
+const Bus<bits+1> Bus<bits>::operator*(const Line &line) const
+{
+    Bus<1+bits> b;
+    Line *data = InputBus<bits>::dataPtr->data;
+    for (int i = 0; i < bits; i++)
+        b[i] = data[i];
+
+    b[bits] = line;
+
+    return b;
 }
 
 template <int bits>
 void Bus<bits>::operator=(int value)
 {
     Line *data = InputBus<bits>::dataPtr->data;
-
     for (int i = 0; i < bits; i++)
     {
         int rem = value % 2;
@@ -285,151 +182,26 @@ void Bus<bits>::operator=(int value)
     }
 }
 
+/// \function
+/// Performs an in-place negation of all the data lines of a bus. The data lines whose
+/// state is \p lcs::UNKOWN, or \p lcs::HIGH_IMPEDENCE, are left unaltered.
 template <int bits>
-void Bus<bits>::operator=(const LineState &l)
+const Bus<bits> &operator~(Bus<bits> &bus)
 {
-    Line *data = InputBus<bits>::dataPtr->data;
-
     for (int i = 0; i < bits; i++)
     {
-        data[i] = l;
-    }
-}
-
-template <int bits>
-template <int w, ExprType Type, typename LExprType, typename RExprType>
-void Bus<bits>::operator=(const Expression<w, Type, LExprType, RExprType> &expr)
-{
-    Line *data = InputBus<bits>::dataPtr->data;
-    if (w > bits)
-    {
-        for (unsigned int i = 0; i < bits; i++)
-            data[i] = expr[i];
-    }
-    else
-        for (int i = 0; i < w; i++)
-            data[i] = expr[i];
-}
-
-template <int bits>
-template <int w, ExprType Type, typename LExprType, typename RExprType>
-void Bus<bits>::operator=(const DelayExprPair<w, Type, LExprType, RExprType> &dep)
-{
-    Line *data = InputBus<bits>::dataPtr->data;
-    Expression<w, Type, LExprType, RExprType> expr = dep.getExpr();
-    unsigned int delay = dep.getDelay();
-
-    if (w > bits)
-    {
-        for (unsigned int i = 0; i < bits; i++)
-        {
-            data[i].setAssDelay(delay);
-            data[i] = expr[i];
-        }
-    }
-    else
-        for (int i = 0; i < w; i++)
-        {
-            data[i].setAssDelay(delay);
-            data[i] = expr[i];
-        }
-}
-
-template <int bits>
-void Bus<bits>::operator=(const DelayStatePair &dsp)
-{
-    Line *data = InputBus<bits>::dataPtr->data;
-    LineState state = dsp.getState();
-    unsigned int delay = dsp.getDelay();
-
-    for (unsigned int i = 0; i < bits; i++)
-    {
-        data[i].setAssDelay(delay);
-        data[i] = state;
-    }
-}
-
-template <int bits>
-Expression<1, LINE_EXPR, void, void> Bus<bits>::operator[](int index) throw(OutOfRangeException<int>)
-{
-    if (index < 0 || index >= bits)
-        throw OutOfRangeException<int>(0, bits-1, index);
-
-    Line *line = InputBus<bits>::dataPtr->data;
-    line += index;
-    return Expression<1, LINE_EXPR, void, void>(line);
-}
-
-template <int bits>
-template <int w>
-const Bus<w+bits> Bus<bits>::operator,(const Bus<w> &bus) const
-{
-    Bus<w+bits> b;
-    Line *data = InputBus<bits>::dataPtr->data,
-         *bdata = b.dataPtr->data;
-    for (int i = 0; i < bits; i++)
-        bdata[i] = data[i];
-
-    data = bus.dataPtr->data;
-    for (int i = 0; i < w; i++)
-        bdata[i+bits] = data[i];
-
-    return b;
-}
-
-template <int bits>
-template <int w>
-const InputBus<w+bits> Bus<bits>::operator,(const InputBus<w> &bus) const
-{
-    Bus<w+bits> b;
-    Line *data = InputBus<bits>::dataPtr->data,
-         *bdata = b.dataPtr->data;
-    for (int i = 0; i < bits; i++)
-        bdata[i] = data[i];
-
-    data = bus.dataPtr->data;
-    for (int i = 0; i < w; i++)
-        bdata[i+bits] = data[i];
-
-    return b;
-}
-
-template <int bits>
-const Bus<bits+1> Bus<bits>::operator,(const Line &line) const
-{
-    Bus<1+bits> b;
-    Line *data = InputBus<bits>::dataPtr->data,
-         *bdata = b.dataPtr->data;
-
-    for (int i = 0; i < bits; i++)
-        bdata[i] = data[i];
-
-    bdata[bits] = line;
-
-    return b;
-}
-
-template <int bits>
-template <int w>
-const Bus<w> Bus<bits>::partSelect(int s) const
-{
-    Bus<w> b;
-
-    Line *bdata = b.dataPtr->data, *data = InputBus<bits>::dataPtr->data;
-    for (int i = 0; i < w; i++)
-    {
-        if (i+s < bits)
-            bdata[i] = data[i+s];
-        else
-            break;
+        if (bus[i] == LOW)
+            bus[i] = HIGH;
+        else if (bus[i] == HIGH)
+            bus[i] = LOW;
     }
 
-    return b;
+    return bus;
 }
 
 } // End of namespace lcs.
 
-/// \fn
+/// \function
 /// The overloaded bitshift operator to display the bus data lines' states in the
 /// little-endian format onto the \p std::stdout device.
 template <int w>
