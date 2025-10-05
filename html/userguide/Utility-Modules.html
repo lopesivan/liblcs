@@ -194,13 +194,13 @@ of the register bits by indexing suitably.
 <h4 class="subsection">3.5.4 Counter</h4>
 
 <p>
-A module template class <code>Counter</code> is among the off-the-shelf utilities classes provided by libLCS. The 
+A template module class <code>Counter</code> is among the off-the-shelf utilities classes provided by libLCS. The 
 template parameters specify the bit-width of the counter and the triggering event which leads to an increment in
 the count value of the counter. The class <code>Counter</code> is defined in the header file <code>counter.h</code>. The 
 class declaration is as follows.
 
 <pre class="example">     template&lt;unsigned int bits, LineEvent event = LINE_POS_EDGE&gt;
-     class lcs::Counter; // Derived publicly from the class Module
+     class Counter; // Derived publicly from the class Module
 </pre>
    <p>
 The following example illustrates the  usage of the class <code>Counter</code>. It is upto to the user to compile and run 
@@ -228,6 +228,53 @@ to verify the result of the simulation.
      
          return 0;
      }
+</pre>
+</pre>
+   <p>
+
+<h4 class="subsection">3.5.5 Shift Register</h4>
+
+<p>
+There exists an off-the-shelf template module class which encapsulates a shift register. It is defined in the header 
+file <code>lcs/shiftreg.h</code> and has the following class declaration.
+
+<pre class="example">     template &lt;unsigned int bits = 1, PulseEdge edgeType = POS_EDGE, Shift shift = LEFT_SHIFT, unsigned int delay = 0&gt;
+     class ShiftReg; // Derived publicly from the class Module.
+</pre>
+   <p>
+As can be seen from the above class declaration, the shift register class requires four template arguments: 1. Number 
+of bits in the register (that is, the register width), 2. The type of pulse edge on the clock input which triggers 
+the shift operation, 3. A parameter indicating the type of shift (left shift or right shift), 4. The propogation 
+delay. The following example illustrates the usage of the off-the-shelf shift register class.
+
+<pre class="example"><pre class="verbatim">     
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     
+     int main(void)
+     {
+         Bus&lt;4> out(0), count(0);
+         Clock clk = Clock::getClock();
+     
+         // We will make use of the second bit of the counter output 
+         // as the input to our shift register.
+         Counter&lt;4> counter(count, clk);
+     
+         // Initialising a shift register of width 4 bits which is triggered
+         // on occurance of a positive edge on its clock input, and shifts the 
+         // input right. The input to the shift register is the second bit of
+         // the counter module.
+         ShiftReg&lt;4, POS_EDGE, RIGHT_SHIFT> reg(out, count[1], clk);
+     
+         ChangeMonitor&lt;4> cmop(out, "Reg Value");
+     
+         Simulation::setStopTime(4000);
+         Simulation::start();
+     
+         return 0;
+     }
+     
 </pre>
 </pre>
    <p>
