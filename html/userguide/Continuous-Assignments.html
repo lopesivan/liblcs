@@ -1,0 +1,149 @@
+<html lang="en">
+<head>
+<title>Continuous Assignments - libLCS Userguide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="libLCS Userguide">
+<meta name="generator" content="makeinfo 4.8">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="prev" href="Modules.html#Modules" title="Modules">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+This user guide is for libLCS, a library for logic circuit simulation in 100 % C++.
+Copyright (C) 2006, 2007 Siva Chandra.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<p>
+<a name="Continuous-Assignments"></a>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Modules.html#Modules">Modules</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
+<hr>
+</div>
+
+<h2 class="chapter">5 Conitnuous Assignments</h2>
+
+<h3 class="section">5.1 Data Flow Modelling</h3>
+
+<p>A logic circuit, consisting of gates, flipflops etc., performs boolean operations on it's input lines
+and assigns the results to it's output lines. At the very basic level, a person desirous of simulating a
+logic circuit will find it easy and intuitive to describe circuits at the gate level. As the circuits become
+larger and more complex, gate level description of logic circuits becomes tedious and prone to errors. 
+We have seen in the previous chapter that one can build modules which model the actual gate-level circuit at
+the behavioral level instead of laboriusly describing the circuit at the gate level. This way, one can test
+the functionality of the logic circuit in a quick and easy way, and avoid errors. Similarly,
+<b>data flow modelling</b> is another way of modelling circuits, using which one can build logic circuits in a
+quick and easy way to test their functionality. Data flow modelling is at one  level of abstraction higher
+than gate level circuit description. As in Verilog, a powerfull concept called <b>continuous assignments</b>
+facilitate data flow modelling in libLCS. In this chapter, we will learn about continuous assignments and the
+constructs which one has to use in order to incorporate continuous assignments in libLCS.
+
+<h3 class="section">5.2 Data Flow Modelling Using Continuous Assignments</h3>
+
+<p>Continuous assignments are equivalent to modules which encapuslate a boolean relation between their inputs
+and outputs. That is, if the outputs of a module can be expressed as a result of a boolean expression of it's
+inputs, then one can use continuous assignments instead of the module. Continuous assignments assign results
+of a boolean expression, over different busses and/or bus lines, to another bus or bus line continuously. In
+the rest of this chapter, we will refer to the expression as the RHS of the continuous assignment, and the bus
+or bus line to which the value of the expression is assigned to as the LHS.
+
+<pre class="example">     LHS [is continuously assigned with] RHS EXPRESSION;
+</pre>
+   <p>Whenever there is a change in the value of an operand in the RHS, the RHS is re-evaluated with the new value of
+the operand, and the result is assigned to the LHS. This way, continuous assignments provide a short hand
+alternative to a module - A simple assignment statement replaces an entire module definition. In libLCS, continuous
+assignments can be made only to busses of type <code>Bus</code> or <code>InOutBus</code>. The next details the constructs
+which facilitate continuous assignments in libLCS.
+
+<h3 class="section">5.3 Continuous Assignments in libLCS</h3>
+
+<p>In circuits described using libLCS, continuous assignments should be incorporated by using the template function
+<code>cass</code> which is a member of the class <code>Bus</code>. The explicit template parameter, which <i>has</i> to be
+specified, is the assignment delay. The general syntax for using continuous assignements if as follows.
+
+<pre class="example">     [BUS | BUS LINE].cass&lt;ASSIGNMENT DELAY&gt;(RHS EXPRESSION);
+</pre>
+   <p>For example, to assign the result of the expression <code>(c[0] ^ c[1])</code> (<code>c</code> is some bus) continuously to a
+bus <code>b</code> with an assignment delay of 5 system time units, one has to incorporate the following statement in
+his/her code.
+
+<pre class="example">     b.cass&lt;5&gt;(c[0] ^ c[1]);
+</pre>
+   <p>The example in the next section will illustrate the usage of continuous assignments in detail. One should note
+that libLCS currently supports only bitwise operators. Arithmetic operators and bit-shift operators are not
+yet supported.
+
+<h3 class="section">5.4 Example</h3>
+
+<p>In this section, we will build a 1-bit fulladder using contnuous assignments. The input to the fulladder is a
+3-line bus consisting of two input bit lines, and one carry input line. The output is a 2-line bus consisting
+of the sum line and the carry output line. The complete program is as follows. The code has inline comments
+which elaborate on the new constructs used to facilitate continuous assignments.
+
+<pre class="example"><pre class="verbatim">     
+     #include &lt;lcs/lcs.h>
+     
+     using namespace lcs;
+     
+     int main(void)
+     {
+         // The input bus consisting of two input lines 
+         // and the carry input.
+         Bus&lt;3> IN;
+     
+         // The output bus consisting of the sum line
+         // and carry output line.
+         Bus&lt;2> S;
+     
+         // Continuous assignment statements to generate
+         // the sum and carry outputs. The template parameters
+         // indicate the assignment delay. We have used 0
+         // delay here. Note the RHS expression consisting of 
+         // bitwise operators. 
+         S[0].cass&lt;0>(IN[0]&amp;~IN[1]&amp;~IN[2] | ~IN[0]&amp;IN[1]&amp;~IN[2] | ~IN[0]&amp;~IN[1]&amp;IN[2] | IN[0]&amp;IN[1]&amp;IN[2]);
+         S[1].cass&lt;0>(IN[0]&amp;IN[1]&amp;~IN[2] | IN[0]&amp;~IN[1]&amp;IN[2] | ~IN[0]&amp;IN[1]&amp;IN[2] | IN[0]&amp;IN[1]&amp;IN[2]);
+     
+         ChangeMonitor&lt;3> inputMonitor(IN, "Input");
+         ChangeMonitor&lt;2> outputMonitor(S, "Sum");
+     
+         Tester&lt;3> tester(IN);
+     
+         Simulation::setStopTime(1000);
+         Simulation::start();
+     
+         return 0;
+     }
+</pre>
+</pre>
+   <p>When the above program in compiled and run, the following is the output obtained.
+
+<pre class="example">     At time: 0,	Input: 000
+     At time: 0,	Sum: 00
+     At time: 200,	Input: 001
+     At time: 200,	Sum: 01
+     At time: 300,	Input: 010
+     At time: 400,	Input: 011
+     At time: 400,	Sum: 10
+     At time: 500,	Input: 100
+     At time: 500,	Sum: 01
+     At time: 600,	Input: 101
+     At time: 600,	Sum: 10
+     At time: 700,	Input: 110
+     At time: 800,	Input: 111
+     At time: 800,	Sum: 11
+</pre>
+   <p>
+
+</body></html>
+
